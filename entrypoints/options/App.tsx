@@ -192,7 +192,7 @@ export function App({
         <section className="settings-card">
           <div className="card-heading">
             <span><ShieldCheck size={18} /></span>
-            <div><h2>采集规则</h2><p>控制哪些页面进入本地记忆</p></div>
+            <div><h2>采集规则</h2><p>控制哪些页面进入本地记录</p></div>
           </div>
           <div className="form-grid">
             <label>

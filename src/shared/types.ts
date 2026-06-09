@@ -48,6 +48,29 @@ export interface TodaySnapshot {
   topDomain?: string;
 }
 
+export interface DomainGroup {
+  domain: string;
+  pages: SearchResult[];
+  totalDurationSeconds: number;
+}
+
+export interface ChatSessionRecord {
+  id: string;
+  title: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface ChatMessageRecord {
+  id: string;
+  sessionId: string;
+  role: "user" | "assistant";
+  content: string;
+  sources?: RagSource[];
+  offline?: boolean;
+  createdAt: number;
+}
+
 export interface RagSource {
   index: number;
   title: string;

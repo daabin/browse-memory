@@ -1,5 +1,7 @@
 import type { RuntimeResponse } from "../shared/messages";
 import type {
+  ChatMessageRecord,
+  ChatSessionRecord,
   RagAnswer,
   SearchResult,
   TodaySnapshot,
@@ -17,8 +19,14 @@ export interface SidePanelClient {
   getSnapshot(): Promise<TodaySnapshot>;
   getSettings(): Promise<{ hasApiKey: boolean }>;
   getRecent(): Promise<SearchResult[]>;
+  getDistinctDates(): Promise<string[]>;
+  getRecordsByDate(date: string): Promise<SearchResult[]>;
   search(query: string): Promise<SearchResult[]>;
   ask(question: string): Promise<RagAnswer>;
+  listChatSessions(): Promise<ChatSessionRecord[]>;
+  getChatSession(id: string): Promise<{ session: ChatSessionRecord; messages: ChatMessageRecord[] }>;
+  createChatSession(title: string): Promise<ChatSessionRecord>;
+  addChatMessage(sessionId: string, message: Omit<ChatMessageRecord, "id" | "sessionId" | "createdAt">): Promise<ChatMessageRecord>;
   openUrl(url: string): void;
   openOptions(): void;
 }
@@ -43,7 +51,21 @@ export const runtimeClient: SidePanelClient = {
     if ("results" in response) {
       return response.results;
     }
-    throw new Error("无法读取最近记忆。");
+    throw new Error("无法读取最近记录。");
+  },
+  async getDistinctDates() {
+    const response = await send({ type: "GET_DISTINCT_DATES" });
+    if ("dates" in response) {
+      return response.dates;
+    }
+    throw new Error("无法读取日期列表。");
+  },
+  async getRecordsByDate(date) {
+    const response = await send({ type: "GET_RECORDS_BY_DATE", date });
+    if ("results" in response) {
+      return response.results;
+    }
+    throw new Error("无法读取该日期记录。");
   },
   async search(query) {
     const response = await send({ type: "SEARCH", query });
@@ -62,6 +84,34 @@ export const runtimeClient: SidePanelClient = {
       return response.answer;
     }
     throw new Error("问答失败。");
+  },
+  async listChatSessions() {
+    const response = await send({ type: "LIST_CHAT_SESSIONS" });
+    if ("sessions" in response) {
+      return response.sessions;
+    }
+    throw new Error("无法读取会话列表。");
+  },
+  async getChatSession(id) {
+    const response = await send({ type: "GET_CHAT_SESSION", sessionId: id });
+    if ("session" in response && "messages" in response) {
+      return { session: response.session, messages: response.messages };
+    }
+    throw new Error("无法读取会话详情。");
+  },
+  async createChatSession(title) {
+    const response = await send({ type: "CREATE_CHAT_SESSION", title });
+    if ("session" in response) {
+      return response.session;
+    }
+    throw new Error("无法创建会话。");
+  },
+  async addChatMessage(sessionId, message) {
+    const response = await send({ type: "ADD_CHAT_MESSAGE", sessionId, message });
+    if ("message" in response && typeof response.message !== "string") {
+      return response.message;
+    }
+    throw new Error("无法保存消息。");
   },
   openUrl(url) {
     void chrome.tabs.create({ url });

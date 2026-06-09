@@ -7,6 +7,7 @@ import type {
 } from "../shared/messages";
 import type { AppSettings } from "../shared/types";
 import type { BrowseMemoryDatabase } from "../storage/database";
+import { ChatRepository } from "../storage/chat-repository";
 import { PageRepository } from "../storage/page-repository";
 import { SearchRepository } from "../storage/search-repository";
 import { SettingsRepository } from "../storage/settings-repository";
@@ -21,6 +22,7 @@ export class BrowseMemoryApplication {
   private readonly search: SearchRepository;
   private readonly settings: SettingsRepository;
   private readonly secrets: SecretStore;
+  private readonly chat: ChatRepository;
   private readonly client: OpenAICompatibleClient;
   private readonly rag: RagService;
 
@@ -29,6 +31,7 @@ export class BrowseMemoryApplication {
     this.search = new SearchRepository(database);
     this.settings = new SettingsRepository(database);
     this.secrets = new SecretStore(database);
+    this.chat = new ChatRepository(database);
     this.client = new OpenAICompatibleClient(fetcher ?? safeFetch);
     this.rag = new RagService(this.client);
   }
@@ -46,6 +49,18 @@ export class BrowseMemoryApplication {
         return { ok: true, results: await this.search.search(request.query) };
       case "GET_TODAY_SNAPSHOT":
         return { ok: true, snapshot: await this.pages.getTodaySnapshot() };
+      case "GET_DISTINCT_DATES":
+        return { ok: true, dates: await this.pages.getDistinctDates() };
+      case "GET_RECORDS_BY_DATE": {
+        const pages = await this.pages.getByDate(request.date);
+        const results = pages.map((page) => ({
+          page,
+          score: 0,
+          snippet: `${page.title}\n${page.content}`.slice(0, 180),
+          highlights: [],
+        }));
+        return { ok: true, results };
+      }
       case "GET_SETTINGS": {
         const settings = await this.settings.get();
         return {
@@ -115,6 +130,19 @@ export class BrowseMemoryApplication {
       case "CLEAR_ALL_DATA":
         await this.settings.clearAll();
         return { ok: true };
+      case "LIST_CHAT_SESSIONS":
+        return { ok: true, sessions: await this.chat.listSessions() };
+      case "GET_CHAT_SESSION": {
+        const { session, messages } = await this.chat.getSession(request.sessionId);
+        return { ok: true, session, messages };
+      }
+      case "CREATE_CHAT_SESSION":
+        return { ok: true, session: await this.chat.createSession(request.title) };
+      case "ADD_CHAT_MESSAGE":
+        return {
+          ok: true,
+          message: await this.chat.addMessage(request.sessionId, request.message),
+        };
     }
   }
 }

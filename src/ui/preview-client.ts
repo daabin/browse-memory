@@ -61,6 +61,12 @@ export const previewClient: SidePanelClient = {
   async search() {
     return this.getRecent();
   },
+  async getDistinctDates() {
+    return ["2026-06-09"];
+  },
+  async getRecordsByDate() {
+    return this.getRecent();
+  },
   async ask() {
     return {
       text: "你今天重点研究了浏览器端 RAG 的检索架构，以及 Manifest V3 下的采集与持久化方案。[1] [2]",
@@ -74,6 +80,18 @@ export const previewClient: SidePanelClient = {
       ],
       offline: false,
     };
+  },
+  async listChatSessions() {
+    return [];
+  },
+  async getChatSession() {
+    return { session: { id: "s1", title: "test", createdAt: now, updatedAt: now }, messages: [] };
+  },
+  async createChatSession() {
+    return { id: "s1", title: "test", createdAt: now, updatedAt: now };
+  },
+  async addChatMessage() {
+    return { id: "m1", sessionId: "s1", role: "user" as const, content: "hi", createdAt: now };
   },
   openUrl() {},
   openOptions() {},

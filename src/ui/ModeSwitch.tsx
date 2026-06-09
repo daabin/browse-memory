@@ -17,7 +17,7 @@ export function ModeSwitch({
         type="button"
       >
         <BookOpen size={18} />
-        记忆
+        记录
       </button>
       <button
         className={mode === "conversation" ? "active" : ""}

@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from "dexie";
 
-import type { PageRecord } from "../shared/types";
+import type { ChatMessageRecord, ChatSessionRecord, PageRecord } from "../shared/types";
 
 export interface Bm25TermRecord {
   term: string;
@@ -30,6 +30,8 @@ export class BrowseMemoryDatabase extends Dexie {
   bm25Documents!: EntityTable<Bm25DocumentRecord, "pageId">;
   settings!: EntityTable<SettingRecord, "key">;
   cryptoKeys!: EntityTable<CryptoKeyRecord, "id">;
+  chatSessions!: EntityTable<ChatSessionRecord, "id">;
+  chatMessages!: EntityTable<ChatMessageRecord, "id">;
 
   constructor(name = "browse-memory") {
     super(name);
@@ -39,6 +41,15 @@ export class BrowseMemoryDatabase extends Dexie {
       bm25Documents: "pageId",
       settings: "key",
       cryptoKeys: "id",
+    });
+    this.version(2).stores({
+      pages: "id, normalizedUrl, visitDate, domain, updatedAt",
+      bm25Terms: "term",
+      bm25Documents: "pageId",
+      settings: "key",
+      cryptoKeys: "id",
+      chatSessions: "id, createdAt, updatedAt",
+      chatMessages: "id, sessionId, createdAt",
     });
   }
 }

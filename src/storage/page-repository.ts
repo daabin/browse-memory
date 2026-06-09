@@ -95,6 +95,21 @@ export class PageRepository {
     return this.database.pages.count();
   }
 
+  async getDistinctDates(): Promise<string[]> {
+    const dates = await this.database.pages
+      .orderBy("visitDate")
+      .keys();
+    return [...new Set(dates as string[])].sort().reverse();
+  }
+
+  async getByDate(date: string): Promise<PageRecord[]> {
+    return this.database.pages
+      .where("visitDate")
+      .equals(date)
+      .reverse()
+      .sortBy("updatedAt");
+  }
+
   async getTodaySnapshot(now = new Date()): Promise<TodaySnapshot> {
     const visitDate = now.toISOString().slice(0, 10);
     const pages = await this.database.pages
