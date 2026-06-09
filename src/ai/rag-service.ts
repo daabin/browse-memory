@@ -1,4 +1,4 @@
-import type { RagAnswer, SearchResult } from "@/shared/types";
+import type { RagAnswer, SearchResult } from "../shared/types";
 
 import { resolveCitations } from "./citations";
 import { buildRagContext } from "./context";

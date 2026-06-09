@@ -1,4 +1,4 @@
-import type { HighlightRange } from "@/shared/types";
+import type { HighlightRange } from "../shared/types";
 
 export interface Snippet {
   text: string;

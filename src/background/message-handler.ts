@@ -1,5 +1,5 @@
-import { OpenAIRequestError } from "@/ai/openai-client";
-import type { RuntimeRequest, RuntimeResponse } from "@/shared/messages";
+import { OpenAIRequestError } from "../ai/openai-client";
+import type { RuntimeRequest, RuntimeResponse } from "../shared/messages";
 
 import type { BrowseMemoryApplication } from "./application";
 

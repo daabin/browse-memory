@@ -12,6 +12,7 @@ export type RuntimeRequest =
       page: { url: string; title: string; content: string };
     }
   | { type: "STORE_CAPTURE"; capture: PageCapture }
+  | { type: "GET_RECENT" }
   | { type: "SEARCH"; query: string }
   | { type: "GET_TODAY_SNAPSHOT" }
   | { type: "ASK"; question: string; online: boolean }

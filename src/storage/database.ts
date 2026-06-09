@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from "dexie";
 
-import type { PageRecord } from "@/shared/types";
+import type { PageRecord } from "../shared/types";
 
 export interface Bm25TermRecord {
   term: string;

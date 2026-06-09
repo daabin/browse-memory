@@ -2,15 +2,32 @@ import {
   createBm25Index,
   searchIndex,
   upsertDocument,
-} from "@/search/bm25";
-import { buildSnippet } from "@/search/snippet";
-import { tokenize } from "@/search/tokenize";
-import type { SearchResult } from "@/shared/types";
+} from "../search/bm25";
+import { buildSnippet } from "../search/snippet";
+import { tokenize } from "../search/tokenize";
+import type { SearchResult } from "../shared/types";
 
 import type { BrowseMemoryDatabase } from "./database";
 
 export class SearchRepository {
   constructor(private readonly database: BrowseMemoryDatabase) {}
+
+  async recent(limit = 6): Promise<SearchResult[]> {
+    const pages = await this.database.pages
+      .orderBy("updatedAt")
+      .reverse()
+      .limit(limit)
+      .toArray();
+    return pages.map((page) => {
+      const snippet = buildSnippet(`${page.title}\n${page.content}`, [], 180);
+      return {
+        page,
+        score: 0,
+        snippet: snippet.text,
+        highlights: [],
+      };
+    });
+  }
 
   async search(query: string, limit = 10): Promise<SearchResult[]> {
     const pages = await this.database.pages.toArray();

@@ -1,5 +1,5 @@
-import type { RuntimeResponse } from "@/shared/messages";
-import type { AppSettings } from "@/shared/types";
+import type { RuntimeResponse } from "../shared/messages";
+import type { AppSettings } from "../shared/types";
 
 type PublicSettings = Omit<AppSettings, "encryptedApiKey">;
 
@@ -29,8 +29,12 @@ export const optionsClient: OptionsClient = {
   async getSettings() {
     const response = await send({ type: "GET_SETTINGS" });
     if ("settings" in response) {
-      const { encryptedApiKey: _encryptedApiKey, ...settings } =
-        response.settings;
+      const settings: PublicSettings = {
+        chatBaseUrl: response.settings.chatBaseUrl,
+        chatModel: response.settings.chatModel,
+        minimumReadSeconds: response.settings.minimumReadSeconds,
+        blacklistPatterns: response.settings.blacklistPatterns,
+      };
       return { settings, hasApiKey: response.hasApiKey };
     }
     throw new Error("无法读取设置。");

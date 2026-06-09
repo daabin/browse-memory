@@ -1,15 +1,15 @@
-import { OpenAICompatibleClient } from "@/ai/openai-client";
-import { RagService } from "@/ai/rag-service";
-import { SecretStore } from "@/security/secret-store";
+import { OpenAICompatibleClient } from "../ai/openai-client";
+import { RagService } from "../ai/rag-service";
+import { SecretStore } from "../security/secret-store";
 import type {
   RuntimeRequest,
   RuntimeResponse,
-} from "@/shared/messages";
-import type { AppSettings } from "@/shared/types";
-import type { BrowseMemoryDatabase } from "@/storage/database";
-import { PageRepository } from "@/storage/page-repository";
-import { SearchRepository } from "@/storage/search-repository";
-import { SettingsRepository } from "@/storage/settings-repository";
+} from "../shared/messages";
+import type { AppSettings } from "../shared/types";
+import type { BrowseMemoryDatabase } from "../storage/database";
+import { PageRepository } from "../storage/page-repository";
+import { SearchRepository } from "../storage/search-repository";
+import { SettingsRepository } from "../storage/settings-repository";
 
 type Fetcher = typeof fetch;
 
@@ -37,6 +37,8 @@ export class BrowseMemoryApplication {
       case "STORE_CAPTURE":
         await this.pages.upsertCapture(request.capture);
         return { ok: true };
+      case "GET_RECENT":
+        return { ok: true, results: await this.search.recent() };
       case "SEARCH":
         return { ok: true, results: await this.search.search(request.query) };
       case "GET_TODAY_SNAPSHOT":

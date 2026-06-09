@@ -1,4 +1,4 @@
-import type { RagSource } from "@/shared/types";
+import type { RagSource } from "../shared/types";
 
 export function resolveCitations(
   answer: string,

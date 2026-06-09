@@ -1,9 +1,9 @@
-import type { RuntimeResponse } from "@/shared/messages";
+import type { RuntimeResponse } from "../shared/messages";
 import type {
   RagAnswer,
   SearchResult,
   TodaySnapshot,
-} from "@/shared/types";
+} from "../shared/types";
 
 async function send(message: unknown): Promise<RuntimeResponse> {
   const response = (await chrome.runtime.sendMessage(message)) as RuntimeResponse;
@@ -16,6 +16,7 @@ async function send(message: unknown): Promise<RuntimeResponse> {
 export interface SidePanelClient {
   getSnapshot(): Promise<TodaySnapshot>;
   getSettings(): Promise<{ hasApiKey: boolean }>;
+  getRecent(): Promise<SearchResult[]>;
   search(query: string): Promise<SearchResult[]>;
   ask(question: string): Promise<RagAnswer>;
   openUrl(url: string): void;
@@ -36,6 +37,13 @@ export const runtimeClient: SidePanelClient = {
       return { hasApiKey: response.hasApiKey };
     }
     throw new Error("无法读取设置。");
+  },
+  async getRecent() {
+    const response = await send({ type: "GET_RECENT" });
+    if ("results" in response) {
+      return response.results;
+    }
+    throw new Error("无法读取最近记忆。");
   },
   async search(query) {
     const response = await send({ type: "SEARCH", query });

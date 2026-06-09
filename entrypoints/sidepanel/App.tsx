@@ -42,6 +42,7 @@ export function App({
   const [snapshot, setSnapshot] = useState<TodaySnapshot>();
   const [hasApiKey, setHasApiKey] = useState(false);
   const [query, setQuery] = useState("");
+  const [recent, setRecent] = useState<SearchResult[]>([]);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<RagAnswer>();
@@ -49,10 +50,16 @@ export function App({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    void Promise.all([client.getSnapshot(), client.getSettings()])
-      .then(([nextSnapshot, settings]) => {
+    void Promise.all([
+      client.getSnapshot(),
+      client.getSettings(),
+      client.getRecent(),
+    ])
+      .then(([nextSnapshot, settings, recentResults]) => {
         setSnapshot(nextSnapshot);
         setHasApiKey(settings.hasApiKey);
+        setRecent(recentResults);
+        setResults(recentResults);
       })
       .catch((loadError: unknown) => {
         setError(
@@ -64,7 +71,7 @@ export function App({
   useEffect(() => {
     const trimmed = query.trim();
     if (!trimmed) {
-      setResults([]);
+      setResults(recent);
       return;
     }
     const timer = window.setTimeout(() => {
@@ -81,7 +88,7 @@ export function App({
         .finally(() => setBusy(false));
     }, 300);
     return () => window.clearTimeout(timer);
-  }, [client, query]);
+  }, [client, query, recent]);
 
   const ask = async (value = question) => {
     const trimmed = value.trim();
@@ -199,7 +206,7 @@ export function App({
 
             <section className="memory-section">
               <div className="list-heading">
-                <h2>{query ? "搜索结果" : "相关记忆"}</h2>
+                <h2>{query ? "搜索结果" : "最近记忆"}</h2>
                 <span>{results.length > 0 ? `${results.length} 条` : ""}</span>
               </div>
               <ResultList
@@ -307,11 +314,11 @@ function ResultList({
   query: string;
   onOpen(url: string): void;
 }) {
-  if (!query.trim()) {
+  if (!query.trim() && results.length === 0) {
     return (
       <div className="empty-state">
         <Search size={20} />
-        <p>输入关键词，搜索已保存的页面正文。</p>
+        <p>浏览几篇网页后，最近记忆会出现在这里。</p>
       </div>
     );
   }

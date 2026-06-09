@@ -1,6 +1,6 @@
-import { tokenize } from "@/search/tokenize";
-import { normalizeUrl } from "@/shared/url-policy";
-import type { PageCapture, PageRecord, TodaySnapshot } from "@/shared/types";
+import { tokenize } from "../search/tokenize";
+import { normalizeUrl } from "../shared/url-policy";
+import type { PageCapture, PageRecord, TodaySnapshot } from "../shared/types";
 
 import type { Bm25DocumentRecord, BrowseMemoryDatabase } from "./database";
 

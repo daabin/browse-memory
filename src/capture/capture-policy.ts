@@ -1,5 +1,5 @@
-import type { AppSettings } from "@/shared/types";
-import { isBlockedUrl, isSupportedUrl } from "@/shared/url-policy";
+import type { AppSettings } from "../shared/types";
+import { isBlockedUrl, isSupportedUrl } from "../shared/url-policy";
 
 export interface CaptureCandidate {
   url: string;

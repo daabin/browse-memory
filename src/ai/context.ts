@@ -1,4 +1,4 @@
-import type { RagSource, SearchResult } from "@/shared/types";
+import type { RagSource, SearchResult } from "../shared/types";
 
 export interface RagContext {
   text: string;

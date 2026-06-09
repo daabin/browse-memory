@@ -180,11 +180,18 @@ footer { position: fixed; right: 12px; bottom: 10px; left: 12px; z-index: 10; }
 .spin { animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-@media (min-width: 430px) {
+@media (min-width: 390px) {
   .snapshot-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .metric { border-bottom: 0; }
   .metric:nth-child(2) { border-right: 1px solid var(--line); }
   .metric:last-child { border-right: 0; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-field kbd {
+    color: #c0c2c8;
+    background: rgba(255,255,255,.08);
+  }
 }
 
 @media (prefers-color-scheme: dark) {

@@ -35,4 +35,21 @@ describe("SearchRepository", () => {
     expect(results[0]?.page.title).toBe("Browser RAG");
     expect(results[0]?.snippet).toContain("Browser RAG");
   });
+
+  it("returns recently updated pages for the memory home", async () => {
+    const pages = new PageRepository(database);
+    const search = new SearchRepository(database);
+    await pages.upsertCapture(
+      {
+        url: "https://example.com/recent",
+        title: "Recent memory",
+        content: "A useful recent page",
+        durationSeconds: 12,
+        capturedAt: Date.now(),
+      },
+      Date.now(),
+    );
+
+    expect((await search.recent())[0]?.page.title).toBe("Recent memory");
+  });
 });

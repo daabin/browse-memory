@@ -1,10 +1,10 @@
-import { shouldCapture } from "@/capture/capture-policy";
+import { shouldCapture } from "../capture/capture-policy";
 import {
   createSession,
   transitionSession,
   type ReadingSession,
-} from "@/capture/session-machine";
-import type { AppSettings, PageCapture } from "@/shared/types";
+} from "../capture/session-machine";
+import type { AppSettings, PageCapture } from "../shared/types";
 
 export interface SessionStorageAdapter {
   get(): Promise<unknown>;

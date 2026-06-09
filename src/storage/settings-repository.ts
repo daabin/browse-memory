@@ -1,5 +1,5 @@
-import { DEFAULT_SETTINGS } from "@/shared/constants";
-import type { AppSettings } from "@/shared/types";
+import { DEFAULT_SETTINGS } from "../shared/constants";
+import type { AppSettings } from "../shared/types";
 
 import type { BrowseMemoryDatabase } from "./database";
 

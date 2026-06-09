@@ -1,5 +1,5 @@
-import type { EncryptedSecret } from "@/shared/types";
-import type { BrowseMemoryDatabase } from "@/storage/database";
+import type { EncryptedSecret } from "../shared/types";
+import type { BrowseMemoryDatabase } from "../storage/database";
 
 const KEY_ID = "api-key";
 const encoder = new TextEncoder();
