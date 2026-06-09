@@ -65,4 +65,51 @@ describe("OpenAICompatibleClient", () => {
       }),
     ).rejects.toMatchObject({ code });
   });
+
+  it("normalizes a timeout abort to a timeout error", async () => {
+    const fetcher = vi.fn().mockImplementation(() => {
+      const error = new DOMException("The operation was aborted", "AbortError");
+      return Promise.reject(error);
+    });
+    const client = new OpenAICompatibleClient(fetcher);
+
+    await expect(
+      client.chat({
+        baseUrl: "https://api.example.com",
+        apiKey: "key",
+        model: "model",
+        messages: [{ role: "user", content: "Question" }],
+      }),
+    ).rejects.toMatchObject({ code: "timeout" });
+  });
+
+  it("normalizes a network failure to a network error", async () => {
+    const client = new OpenAICompatibleClient(
+      vi.fn().mockRejectedValue(new TypeError("Failed to fetch")),
+    );
+
+    await expect(
+      client.chat({
+        baseUrl: "https://api.example.com",
+        apiKey: "key",
+        model: "model",
+        messages: [{ role: "user", content: "Question" }],
+      }),
+    ).rejects.toMatchObject({ code: "network" });
+  });
+
+  it("normalizes a 500 response to a provider error", async () => {
+    const client = new OpenAICompatibleClient(
+      vi.fn().mockResolvedValue(new Response("error", { status: 500 })),
+    );
+
+    await expect(
+      client.chat({
+        baseUrl: "https://api.example.com",
+        apiKey: "key",
+        model: "model",
+        messages: [{ role: "user", content: "Question" }],
+      }),
+    ).rejects.toMatchObject({ code: "provider" });
+  });
 });

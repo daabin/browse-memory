@@ -15,4 +15,14 @@ describe("tokenize", () => {
   it("removes common stop words and punctuation", () => {
     expect(tokenize("the browser and the web")).toEqual(["browser", "web"]);
   });
+
+  it("normalizes Unicode to NFKC", () => {
+    const tokens = tokenize("ＲＡＧ"); // fullwidth Latin
+    expect(tokens).toEqual(expect.arrayContaining(["rag"]));
+  });
+
+  it("handles empty and whitespace-only input", () => {
+    expect(tokenize("")).toEqual([]);
+    expect(tokenize("   ")).toEqual([]);
+  });
 });

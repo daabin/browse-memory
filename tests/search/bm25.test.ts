@@ -40,4 +40,16 @@ describe("BM25", () => {
   it("returns no results for an empty query", () => {
     expect(searchIndex(createBm25Index(), "  ")).toEqual([]);
   });
+
+  it("respects the limit parameter", () => {
+    const index = createBm25Index();
+    for (let i = 0; i < 25; i++) {
+      upsertDocument(index, { pageId: `doc-${i}`, title: `Document ${i}`, content: "browser RAG" });
+    }
+    expect(searchIndex(index, "browser", 5)).toHaveLength(5);
+  });
+
+  it("returns no results from an empty index", () => {
+    expect(searchIndex(createBm25Index(), "browser")).toEqual([]);
+  });
 });

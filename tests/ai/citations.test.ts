@@ -14,4 +14,22 @@ describe("resolveCitations", () => {
       { index: 2, title: "Two", url: "https://example.com/2" },
     ]);
   });
+
+  it("returns an empty list when there are no citations", () => {
+    expect(
+      resolveCitations("No citations here.", [
+        { index: 1, title: "One", url: "https://example.com/1" },
+      ]),
+    ).toEqual([]);
+  });
+
+  it("ignores citations that reference out-of-range sources", () => {
+    expect(
+      resolveCitations("[1] [5]", [
+        { index: 1, title: "One", url: "https://example.com/1" },
+      ]),
+    ).toEqual([
+      { index: 1, title: "One", url: "https://example.com/1" },
+    ]);
+  });
 });

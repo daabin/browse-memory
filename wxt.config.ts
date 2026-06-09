@@ -8,5 +8,11 @@ export default defineConfig({
     action: { default_title: "Open BrowseMemory" },
     permissions: ["tabs", "activeTab", "storage", "alarms", "sidePanel"],
     host_permissions: ["<all_urls>"],
+    icons: {
+      16: "/icon16.png",
+      32: "/icon32.png",
+      48: "/icon48.png",
+      128: "/icon128.png",
+    },
   },
 });

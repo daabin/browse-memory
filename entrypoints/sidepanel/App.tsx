@@ -1,5 +1,4 @@
 import {
-  BrainCircuit,
   ChevronRight,
   Clock3,
   Eye,
@@ -111,8 +110,8 @@ export function App({
   return (
     <div className="app-shell">
       <header className="utility-header">
-        <div className="brand-mark" aria-hidden="true">
-          <BrainCircuit size={19} />
+        <div aria-hidden="true">
+          <img src="/icon128.png" alt="" width={30} height={30} style={{ borderRadius: 4 }} />
         </div>
         <div className="brand-copy">
           <strong>BrowseMemory</strong>
@@ -335,6 +334,14 @@ function ResultList({
           onClick={() => onOpen(result.page.url)}
         >
           <span className="domain-icon">
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${result.page.domain}&sz=32`}
+              alt=""
+              width={17}
+              height={17}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute("style"); }}
+              onLoad={(e) => { (e.target as HTMLImageElement).nextElementSibling?.setAttribute("style", "display:none"); }}
+            />
             <Globe2 size={17} />
           </span>
           <span className="result-copy">
@@ -358,10 +365,34 @@ function Answer({
   answer: RagAnswer;
   client: SidePanelClient;
 }) {
+  const sourceMap = new Map(answer.sources.map((s) => [s.index, s.url]));
+  const parts = answer.text.split(/(\[\d+\])/g);
+
   return (
     <div className="answer-block">
       {answer.offline ? <span className="offline-label">离线模式</span> : null}
-      <p>{answer.text}</p>
+      <p>
+        {parts.map((part, i) => {
+          const match = /^\[(\d+)\]$/.exec(part);
+          if (match) {
+            const index = Number(match[1]);
+            const url = sourceMap.get(index);
+            if (url) {
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  className="citation-link"
+                  onClick={() => client.openUrl(url)}
+                >
+                  {part}
+                </button>
+              );
+            }
+          }
+          return part ? <span key={i}>{part}</span> : null;
+        })}
+      </p>
       {answer.sources.length > 0 ? (
         <div className="sources">
           {answer.sources.map((source) => (

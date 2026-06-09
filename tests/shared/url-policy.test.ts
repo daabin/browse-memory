@@ -27,4 +27,15 @@ describe("URL policy", () => {
     expect(isSupportedUrl("https://example.com")).toBe(true);
     expect(isSupportedUrl("chrome://settings")).toBe(false);
   });
+
+  it("blocks unsupported schemes as blocked URLs", () => {
+    expect(isBlockedUrl("chrome-extension://abc", [])).toBe(true);
+    expect(isBlockedUrl("about:blank", [])).toBe(true);
+  });
+
+  it("sorts remaining query parameters after removing tracking ones", () => {
+    expect(normalizeUrl("https://x.com/?z=3&a=1&utm_source=seo")).toBe(
+      "https://x.com/?a=1&z=3",
+    );
+  });
 });

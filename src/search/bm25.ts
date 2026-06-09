@@ -23,12 +23,49 @@ export interface Bm25Result {
   score: number;
 }
 
+export interface Bm25StoredDocument {
+  pageId: string;
+  length: number;
+  frequencies: Record<string, number>;
+}
+
+export interface Bm25StoredTerm {
+  term: string;
+  documentFrequency: number;
+  postings: Array<{ pageId: string; termFrequency: number }>;
+}
+
 export function createBm25Index(): Bm25Index {
   return {
     documents: new Map(),
     documentFrequency: new Map(),
     totalLength: 0,
   };
+}
+
+export function loadStoredIndex(
+  storedDocuments: Bm25StoredDocument[],
+  storedTerms: Bm25StoredTerm[],
+): Bm25Index {
+  const index = createBm25Index();
+  let totalLength = 0;
+
+  for (const doc of storedDocuments) {
+    const frequencies = new Map(Object.entries(doc.frequencies));
+    index.documents.set(doc.pageId, {
+      pageId: doc.pageId,
+      length: doc.length,
+      frequencies,
+    });
+    totalLength += doc.length;
+  }
+
+  for (const term of storedTerms) {
+    index.documentFrequency.set(term.term, term.documentFrequency);
+  }
+
+  index.totalLength = totalLength;
+  return index;
 }
 
 function frequenciesFor(document: Bm25InputDocument): Map<string, number> {

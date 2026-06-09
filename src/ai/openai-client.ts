@@ -54,11 +54,16 @@ function parseSse(body: string): string {
 }
 
 export class OpenAICompatibleClient {
-  constructor(private readonly fetcher: Fetcher = fetch) {}
+  private readonly fetcher: Fetcher;
+
+  constructor(fetcher?: Fetcher) {
+    // 使用箭头函数保持 globalThis 绑定，避免 Service Worker "Illegal invocation"
+    this.fetcher = fetcher ?? ((url, init) => self.fetch(url, init));
+  }
 
   async chat(request: ChatRequest): Promise<string> {
     const controller = new AbortController();
-    const timeout = globalThis.setTimeout(() => controller.abort(), 30_000);
+    const timeout = self.setTimeout(() => controller.abort(), 30_000);
     try {
       const response = await this.fetcher(endpoint(request.baseUrl), {
         method: "POST",
@@ -107,9 +112,13 @@ export class OpenAICompatibleClient {
       if (error instanceof DOMException && error.name === "AbortError") {
         throw new OpenAIRequestError("timeout", "AI 服务响应超时。");
       }
-      throw new OpenAIRequestError("network", "无法连接 AI 服务。");
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new OpenAIRequestError(
+        "network",
+        `无法连接 AI 服务: ${detail}`,
+      );
     } finally {
-      globalThis.clearTimeout(timeout);
+      self.clearTimeout(timeout);
     }
   }
 }

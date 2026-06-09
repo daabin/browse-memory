@@ -13,6 +13,9 @@ import { SettingsRepository } from "../storage/settings-repository";
 
 type Fetcher = typeof fetch;
 
+/** Service Worker 安全的 fetch 包装，避免 Illegal invocation */
+const safeFetch: Fetcher = (url, init) => self.fetch(url, init);
+
 export class BrowseMemoryApplication {
   private readonly pages: PageRepository;
   private readonly search: SearchRepository;
@@ -21,12 +24,12 @@ export class BrowseMemoryApplication {
   private readonly client: OpenAICompatibleClient;
   private readonly rag: RagService;
 
-  constructor(database: BrowseMemoryDatabase, fetcher: Fetcher = fetch) {
+  constructor(database: BrowseMemoryDatabase, fetcher?: Fetcher) {
     this.pages = new PageRepository(database);
     this.search = new SearchRepository(database);
     this.settings = new SettingsRepository(database);
     this.secrets = new SecretStore(database);
-    this.client = new OpenAICompatibleClient(fetcher);
+    this.client = new OpenAICompatibleClient(fetcher ?? safeFetch);
     this.rag = new RagService(this.client);
   }
 

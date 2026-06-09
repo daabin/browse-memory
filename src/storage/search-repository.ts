@@ -1,7 +1,6 @@
 import {
-  createBm25Index,
+  loadStoredIndex,
   searchIndex,
-  upsertDocument,
 } from "../search/bm25";
 import { buildSnippet } from "../search/snippet";
 import { tokenize } from "../search/tokenize";
@@ -30,19 +29,35 @@ export class SearchRepository {
   }
 
   async search(query: string, limit = 10): Promise<SearchResult[]> {
-    const pages = await this.database.pages.toArray();
-    const index = createBm25Index();
-    for (const page of pages) {
-      upsertDocument(index, {
-        pageId: page.id,
-        title: page.title,
-        content: page.content,
-      });
+    const queryTokens = tokenize(query);
+    if (queryTokens.length === 0) {
+      return [];
     }
 
+    const [documents, matchingTerms] = await Promise.all([
+      this.database.bm25Documents.toArray(),
+      this.database.bm25Terms
+        .where("term")
+        .anyOf(queryTokens)
+        .toArray(),
+    ]);
+
+    if (documents.length === 0) {
+      return [];
+    }
+
+    const index = loadStoredIndex(documents, matchingTerms);
     const ranked = searchIndex(index, query, limit);
+    if (ranked.length === 0) {
+      return [];
+    }
+
+    const pageIds = ranked.map((r) => r.pageId);
+    const pages = await this.database.pages
+      .where("id")
+      .anyOf(pageIds)
+      .toArray();
     const pageMap = new Map(pages.map((page) => [page.id, page]));
-    const queryTokens = tokenize(query);
 
     return ranked.flatMap(({ pageId, score }) => {
       const page = pageMap.get(pageId);

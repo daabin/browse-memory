@@ -131,7 +131,9 @@ export function App({
   return (
     <div className="options-shell">
       <header>
-        <div className="options-logo"><BrainCircuit size={23} /></div>
+         <div aria-hidden="true">
+          <img src="/icon128.png" alt="" width={30} height={30} style={{ borderRadius: 4 }} />
+        </div>
         <div>
           <h1>BrowseMemory</h1>
           <p>设置与隐私</p>

@@ -43,4 +43,22 @@ describe("reading session", () => {
       durationSeconds: 0,
     });
   });
+
+  it("ignores backward TICKs that would produce negative duration", () => {
+    const started = createSession(1, "https://example.com", "Test", 5_000);
+    const ticked = transitionSession(started, { type: "TICK", at: 3_000 });
+    expect(ticked.durationSeconds).toBe(0);
+  });
+
+  it("preserves active state after NAVIGATE", () => {
+    const active = createSession(1, "https://a.com", "A", 0);
+    const hidden = transitionSession(active, { type: "SET_ACTIVE", active: false, at: 0 });
+    const navigated = transitionSession(hidden, {
+      type: "NAVIGATE",
+      url: "https://b.com",
+      title: "B",
+      at: 0,
+    });
+    expect(navigated.active).toBe(false);
+  });
 });

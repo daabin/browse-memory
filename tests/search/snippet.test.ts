@@ -15,4 +15,15 @@ describe("buildSnippet", () => {
       "alpha beta…",
     );
   });
+
+  it("highlights multiple occurrences of query tokens", () => {
+    const result = buildSnippet("alpha beta alpha beta", ["alpha"], 40);
+    expect(result.ranges.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("adds ellipsis when content is truncated", () => {
+    const long = "a ".repeat(200).trim();
+    const result = buildSnippet(long, ["a"], 20);
+    expect(result.text).toContain("…");
+  });
 });
