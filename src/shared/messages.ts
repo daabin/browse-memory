@@ -7,6 +7,10 @@ import type {
 } from "./types";
 
 export type RuntimeRequest =
+  | {
+      type: "PAGE_CHANGED";
+      page: { url: string; title: string; content: string };
+    }
   | { type: "STORE_CAPTURE"; capture: PageCapture }
   | { type: "SEARCH"; query: string }
   | { type: "GET_TODAY_SNAPSHOT" }

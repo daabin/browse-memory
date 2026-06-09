@@ -1,4 +1,5 @@
 {
+  "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
@@ -21,5 +22,12 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["entrypoints", "src", "tests", "*.ts", "*.js"]
+  "include": [
+    ".wxt/wxt.d.ts",
+    "entrypoints",
+    "src",
+    "tests",
+    "*.ts",
+    "*.js"
+  ]
 }
