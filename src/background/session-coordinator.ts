@@ -54,6 +54,7 @@ export class SessionCoordinator {
     this.state = {
       session: createSession(tab.tabId, tab.url, tab.title, at),
       incognito: tab.incognito,
+      page: { url: tab.url, title: tab.title, content: "" },
     };
     await this.persist();
   }
@@ -63,7 +64,17 @@ export class SessionCoordinator {
     page: { url: string; title: string; content: string },
     at = Date.now(),
   ): Promise<void> {
+    // If no active session for this tab, create one (handles race with tabs.onActivated)
     if (!this.state || this.state.session.tabId !== tabId) {
+      if (this.state) {
+        await this.finalize(at);
+      }
+      this.state = {
+        session: createSession(tabId, page.url, page.title, at),
+        incognito: false,
+        page,
+      };
+      await this.persist();
       return;
     }
     if (this.state.session.url !== page.url) {

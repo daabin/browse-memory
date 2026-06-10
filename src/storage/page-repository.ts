@@ -5,8 +5,6 @@ import type { PageCapture, PageRecord, TodaySnapshot } from "../shared/types";
 
 import type { Bm25DocumentRecord, BrowseMemoryDatabase } from "./database";
 
-const DEDUPLICATION_WINDOW_MS = 10 * 60_000;
-
 function hashContent(value: string): string {
   let hash = 2_166_136_261;
   for (let index = 0; index < value.length; index += 1) {
@@ -66,9 +64,9 @@ export class PageRepository {
             .reverse()
             .sortBy("updatedAt")
         )[0];
+        const today = toLocalDateKey(new Date(now));
         const shouldMerge =
-          previous !== undefined &&
-          now - previous.updatedAt < DEDUPLICATION_WINDOW_MS;
+          previous !== undefined && previous.visitDate === today;
         const page: PageRecord = shouldMerge
           ? {
               ...previous,

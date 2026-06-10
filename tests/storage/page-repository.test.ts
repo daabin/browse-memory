@@ -16,7 +16,7 @@ describe("PageRepository", () => {
     await database.delete();
   });
 
-  it("accumulates a repeated URL inside ten minutes", async () => {
+  it("accumulates a repeated URL within the same day", async () => {
     const capture = {
       url: "https://example.com/rag?utm_source=test",
       title: "RAG Guide",
@@ -35,7 +35,7 @@ describe("PageRepository", () => {
     expect(await pages.count()).toBe(1);
   });
 
-  it("creates a new visit after ten minutes", async () => {
+  it("creates a new visit on a different day", async () => {
     const capture = {
       url: "https://example.com/rag",
       title: "RAG Guide",
@@ -44,7 +44,8 @@ describe("PageRepository", () => {
       capturedAt: 1_000,
     };
     await pages.upsertCapture(capture, 1_000);
-    await pages.upsertCapture(capture, 1_000 + 11 * 60_000);
+    // 25 hours later is guaranteed to be a different calendar day
+    await pages.upsertCapture(capture, 1_000 + 25 * 3_600_000);
 
     expect(await pages.count()).toBe(2);
   });
@@ -117,7 +118,7 @@ describe("PageRepository", () => {
         },
         2_000,
       );
-      // Update page 1 with new content (after dedup window)
+      // Update page 1 with new content on a different calendar day
       await pages.upsertCapture(
         {
           url: "https://example.com/1",
@@ -126,7 +127,7 @@ describe("PageRepository", () => {
           durationSeconds: 5,
           capturedAt: 3_000,
         },
-        1_000 + 11 * 60_000,
+        1_000 + 25 * 3_600_000,
       );
 
       const sharedTerm = await database.bm25Terms.get("shared");
