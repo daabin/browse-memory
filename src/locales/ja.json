@@ -48,7 +48,28 @@
     "invalidReadTime": "最低閲覧時間は0より大きい値にしてください。",
     "invalidRetention": "データ保持日数は0より大きい値にしてください。",
     "operationFailed": "操作に失敗しました。もう一度お試しください。",
-    "loadFailed": "設定の読み込みに失敗しました。"
+    "loadFailed": "設定の読み込みに失敗しました。",
+    "embedding": "セマンティック検索",
+    "embeddingDesc": "Embeddingを有効にすると検索精度が向上します（オプション）",
+    "embeddingEnabled": "セマンティック検索を有効にする",
+    "embeddingAddress": "Embedding URL",
+    "embeddingKey": "Embedding Key",
+    "embeddingKeyPlaceholder": "空欄で既存のキーを保持",
+    "embeddingKeySaved": "Embedding Keyを安全に保存しました",
+    "embeddingKeyReuse": "チャットAPIキーを再利用",
+    "embeddingModel": "Embeddingモデル",
+    "embeddingIndexed": "{n} / {total} ページをインデックス済み",
+    "embeddingBackfill": "インデックス構築",
+    "testEmbedding": "Embeddingテスト",
+    "embeddingConnected": "Embedding接続に成功しました。",
+    "report": "レポート設定",
+    "reportDesc": "AIレポートの自動生成を設定",
+    "reportDailyHour": "日報生成時刻（0-23時）",
+    "reportDaily": "日報",
+    "reportWeekly": "週報",
+    "reportMonthly": "月報",
+    "generateNow": "今すぐ生成",
+    "viewReports": "レポートを見る"
   },
   "sidepanel": {
     "memory": "記録",
@@ -90,6 +111,22 @@
     "sessionLoadFailed": "セッションの読み込みに失敗しました。",
     "deleteChat": "会話を削除",
     "deleteFailed": "会話の削除に失敗しました。",
-    "navLabel": "メインナビゲーション"
+    "navLabel": "メインナビゲーション",
+    "viewReports": "レポートを見る"
+  },
+  "dashboard": {
+    "title": "レポートダッシュボード",
+    "daily": "日次",
+    "weekly": "週次",
+    "monthly": "月次",
+    "noReports": "レポートはまだありません。生成ボタンをクリックしてください。",
+    "generateNow": "今すぐ生成",
+    "generating": "生成中…",
+    "loadFailed": "レポートの読み込みに失敗しました。",
+    "generateFailed": "レポートの生成に失敗しました。",
+    "topics": "トピック",
+    "sources": "ソースページ",
+    "pageCount": "{n} ページ",
+    "pages": "ページ"
   }
 }

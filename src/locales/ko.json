@@ -48,7 +48,28 @@
     "invalidReadTime": "최소 열람 시간은 0보다 커야 합니다.",
     "invalidRetention": "데이터 보존 일수는 0보다 커야 합니다.",
     "operationFailed": "작업에 실패했습니다. 다시 시도해 주세요.",
-    "loadFailed": "설정을 불러오지 못했습니다."
+    "loadFailed": "설정을 불러오지 못했습니다.",
+    "embedding": "의미 검색",
+    "embeddingDesc": "Embedding을 활성화하면 더 정확한 검색 결과를 얻을 수 있습니다 (선택 사항)",
+    "embeddingEnabled": "의미 검색 활성화",
+    "embeddingAddress": "Embedding URL",
+    "embeddingKey": "Embedding Key",
+    "embeddingKeyPlaceholder": "비워두면 기존 키 유지",
+    "embeddingKeySaved": "Embedding Key가 안전하게 저장됨",
+    "embeddingKeyReuse": "채팅 API 키 재사용",
+    "embeddingModel": "Embedding 모델",
+    "embeddingIndexed": "{n} / {total} 페이지 색인됨",
+    "embeddingBackfill": "색인 구축",
+    "testEmbedding": "Embedding 테스트",
+    "embeddingConnected": "Embedding 연결 성공.",
+    "report": "보고서 설정",
+    "reportDesc": "AI 보고서 자동 생성 설정",
+    "reportDailyHour": "일간 보고서 시간 (0-23시)",
+    "reportDaily": "일간",
+    "reportWeekly": "주간",
+    "reportMonthly": "월간",
+    "generateNow": "지금 생성",
+    "viewReports": "보고서 보기"
   },
   "sidepanel": {
     "memory": "기록",
@@ -90,6 +111,22 @@
     "sessionLoadFailed": "세션을 불러오지 못했습니다.",
     "deleteChat": "대화 삭제",
     "deleteFailed": "대화 삭제에 실패했습니다.",
-    "navLabel": "메인 내비게이션"
+    "navLabel": "메인 내비게이션",
+    "viewReports": "보고서 보기"
+  },
+  "dashboard": {
+    "title": "보고서 대시보드",
+    "daily": "일간",
+    "weekly": "주간",
+    "monthly": "월간",
+    "noReports": "아직 보고서가 없습니다. 생성 버튼을 클릭하세요.",
+    "generateNow": "지금 생성",
+    "generating": "생성 중…",
+    "loadFailed": "보고서를 불러오지 못했습니다.",
+    "generateFailed": "보고서를 생성하지 못했습니다.",
+    "topics": "주제",
+    "sources": "소스 페이지",
+    "pageCount": "{n} 페이지",
+    "pages": "페이지"
   }
 }

@@ -48,7 +48,28 @@
     "invalidReadTime": "最低阅读时长必须大于 0 秒。",
     "invalidRetention": "数据保留天数必须大于 0 天。",
     "operationFailed": "操作失败，请重试。",
-    "loadFailed": "读取设置失败。"
+    "loadFailed": "读取设置失败。",
+    "embedding": "语义搜索",
+    "embeddingDesc": "启用 Embedding 以获得更精准的搜索结果（可选）",
+    "embeddingEnabled": "启用语义搜索",
+    "embeddingAddress": "Embedding 地址",
+    "embeddingKey": "Embedding Key",
+    "embeddingKeyPlaceholder": "留空以保留现有 Key",
+    "embeddingKeySaved": "Embedding Key 已安全保存",
+    "embeddingKeyReuse": "复用对话 API Key",
+    "embeddingModel": "Embedding 模型",
+    "embeddingIndexed": "已索引 {n} / {total} 页",
+    "embeddingBackfill": "补建索引",
+    "testEmbedding": "测试 Embedding",
+    "embeddingConnected": "Embedding 连接成功。",
+    "report": "报告设置",
+    "reportDesc": "配置 AI 报告的自动生成时间",
+    "reportDailyHour": "日报生成时间（0-23 时）",
+    "reportDaily": "日报",
+    "reportWeekly": "周报",
+    "reportMonthly": "月报",
+    "generateNow": "立即生成",
+    "viewReports": "查看报告"
   },
   "sidepanel": {
     "memory": "记录",
@@ -90,6 +111,22 @@
     "sessionLoadFailed": "无法加载会话详情。",
     "deleteChat": "删除对话",
     "deleteFailed": "删除对话失败。",
-    "navLabel": "主导航"
+    "navLabel": "主导航",
+    "viewReports": "查看报告"
+  },
+  "dashboard": {
+    "title": "报告仪表盘",
+    "daily": "日报",
+    "weekly": "周报",
+    "monthly": "月报",
+    "noReports": "暂无报告，点击生成按钮创建。",
+    "generateNow": "立即生成",
+    "generating": "生成中…",
+    "loadFailed": "加载报告失败。",
+    "generateFailed": "生成报告失败。",
+    "topics": "主题",
+    "sources": "来源页面",
+    "pageCount": "{n} 页",
+    "pages": "页"
   }
 }

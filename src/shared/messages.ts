@@ -4,6 +4,8 @@ import type {
   ChatSessionRecord,
   PageCapture,
   RagAnswer,
+  ReportRecord,
+  ReportType,
   SearchResult,
   TodaySnapshot,
 } from "./types";
@@ -21,26 +23,47 @@ export type RuntimeRequest =
   | { type: "GET_RECORDS_BY_DATE"; date: string }
   | { type: "ASK"; question: string; online: boolean; sessionId?: string }
   | { type: "GET_SETTINGS" }
-  | { type: "SAVE_SETTINGS"; settings: Partial<AppSettings>; apiKey?: string }
+  | { type: "SAVE_SETTINGS"; settings: Partial<AppSettings>; apiKey?: string; embeddingApiKey?: string }
   | { type: "TEST_CONNECTION"; settings: Partial<AppSettings>; apiKey?: string }
+  | { type: "TEST_EMBEDDING_CONNECTION"; settings: Partial<AppSettings>; embeddingApiKey?: string }
   | { type: "GET_STORAGE_USAGE" }
   | { type: "CLEAR_ALL_DATA" }
   | { type: "LIST_CHAT_SESSIONS" }
   | { type: "GET_CHAT_SESSION"; sessionId: string }
   | { type: "CREATE_CHAT_SESSION"; title: string }
   | { type: "ADD_CHAT_MESSAGE"; sessionId: string; message: Omit<ChatMessageRecord, "id" | "sessionId" | "createdAt"> }
-  | { type: "DELETE_CHAT_SESSION"; sessionId: string };
+  | { type: "DELETE_CHAT_SESSION"; sessionId: string }
+  | { type: "GET_REPORTS"; reportType?: ReportType }
+  | { type: "GET_REPORT"; reportId: string }
+  | { type: "GENERATE_REPORT"; reportType: ReportType; date?: string }
+  | { type: "GET_EMBEDDING_STATUS" }
+  | { type: "TRIGGER_EMBEDDING_BACKFILL" }
+  | { type: "GET_QUEUE_STATUS" };
 
 export type RuntimeResponse =
   | { ok: true; results: SearchResult[] }
   | { ok: true; snapshot: TodaySnapshot }
   | { ok: true; dates: string[] }
   | { ok: true; answer: RagAnswer }
-  | { ok: true; settings: AppSettings; hasApiKey: boolean }
+  | { ok: true; settings: AppSettings; hasApiKey: boolean; hasEmbeddingApiKey: boolean }
   | { ok: true; bytes: number }
   | { ok: true; sessions: ChatSessionRecord[] }
   | { ok: true; session: ChatSessionRecord; messages: ChatMessageRecord[] }
   | { ok: true; session: ChatSessionRecord }
   | { ok: true; message: ChatMessageRecord }
+  | { ok: true; reports: ReportRecord[] }
+  | { ok: true; report: ReportRecord }
+  | {
+      ok: true;
+      embeddingStatus: {
+        enabled: boolean;
+        indexedCount: number;
+        totalCount: number;
+      };
+    }
+  | {
+      ok: true;
+      queueStatus: { pending: number; processing: number; failed: number };
+    }
   | { ok: true }
   | { ok: false; code: string; message: string };

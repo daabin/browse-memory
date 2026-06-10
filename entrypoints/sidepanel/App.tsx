@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  BarChart3,
   ChevronDown,
   ChevronRight,
   Clock3,
@@ -90,7 +91,57 @@ export function App({
   const [chatMessages, setChatMessages] = useState<ChatMessageRecord[]>([]);
   const [question, setQuestion] = useState("");
   const [showSettings, setShowSettings] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const dashboardFrameRef = useRef<HTMLIFrameElement>(null);
+
+  // Dashboard postMessage bridge: proxy iframe requests through runtimeClient
+  useEffect(() => {
+    const handler = async (event: MessageEvent) => {
+      const data = event.data;
+      if (!data || data.__bm !== "dashboard-request") return;
+
+      // Fire-and-forget (openUrl)
+      if (data.method === "openUrl") {
+        client.openUrl(data.args[0] as string);
+        return;
+      }
+
+      const frame = dashboardFrameRef.current;
+      if (!frame?.contentWindow) return;
+
+      try {
+        let result: unknown;
+        switch (data.method) {
+          case "getReports":
+            result = await client.getReports(data.args[0] as import("../../src/shared/types").ReportType | undefined);
+            break;
+          case "getReport":
+            result = await client.getReport(data.args[0] as string);
+            break;
+          case "generateReport":
+            result = await client.generateReport(
+              data.args[0] as import("../../src/shared/types").ReportType,
+              data.args[1] as string | undefined,
+            );
+            break;
+          default:
+            throw new Error(`Unknown dashboard method: ${data.method}`);
+        }
+        frame.contentWindow.postMessage(
+          { __bm: "dashboard-response", id: data.id, ok: true, data: result },
+          "*",
+        );
+      } catch (err) {
+        frame.contentWindow.postMessage(
+          { __bm: "dashboard-response", id: data.id, ok: false, error: err instanceof Error ? err.message : String(err) },
+          "*",
+        );
+      }
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [client]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -331,6 +382,15 @@ export function App({
               <Metric icon={<Globe2 size={16} />} label={t("sidepanel.topDomain")} value={snapshot?.topDomain ?? t("sidepanel.noData")} compact />
             </GlassSurface>
 
+            <button
+              className="view-reports-button"
+              type="button"
+              onClick={() => setShowDashboard(true)}
+            >
+              <BarChart3 size={15} />
+              {t("sidepanel.viewReports")}
+            </button>
+
             <div className="search-field">
               <Search size={19} />
               <input
@@ -386,8 +446,9 @@ export function App({
                     <h1>{t("sidepanel.chatHistory")}</h1>
                     <p>{t("sidepanel.chatHistoryDesc")}</p>
                   </div>
-                  <button className="send-button" aria-label={t("sidepanel.newChat")} onClick={startNewChat} type="button">
+                  <button className="new-chat-button" aria-label={t("sidepanel.newChat")} onClick={startNewChat} type="button">
                     <Send size={17} />
+                    {t("sidepanel.newChat")}
                   </button>
                 </div>
                 {sessions.length === 0 ? (
@@ -498,6 +559,23 @@ export function App({
             className="settings-overlay-frame"
             src={chrome.runtime.getURL("options.html")}
             title={t("sidepanel.settingsTitle")}
+          />
+        </div>
+      ) : null}
+
+      {showDashboard ? (
+        <div className="settings-overlay" role="dialog" aria-modal="true" aria-label={t("dashboard.title")}>
+          <div className="settings-overlay-header">
+            <h2>{t("dashboard.title")}</h2>
+            <button className="icon-button" aria-label={t("common.close")} onClick={() => setShowDashboard(false)} type="button">
+              <X size={18} />
+            </button>
+          </div>
+          <iframe
+            ref={dashboardFrameRef}
+            className="settings-overlay-frame"
+            src={chrome.runtime.getURL("dashboard.html")}
+            title={t("dashboard.title")}
           />
         </div>
       ) : null}

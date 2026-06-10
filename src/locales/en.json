@@ -48,7 +48,28 @@
     "invalidReadTime": "Minimum reading time must be greater than 0.",
     "invalidRetention": "Data retention days must be greater than 0.",
     "operationFailed": "Operation failed, please try again.",
-    "loadFailed": "Failed to load settings."
+    "loadFailed": "Failed to load settings.",
+    "embedding": "Semantic Search",
+    "embeddingDesc": "Enable Embedding for more accurate search results (optional)",
+    "embeddingEnabled": "Enable semantic search",
+    "embeddingAddress": "Embedding URL",
+    "embeddingKey": "Embedding Key",
+    "embeddingKeyPlaceholder": "Leave empty to keep existing key",
+    "embeddingKeySaved": "Embedding Key saved securely",
+    "embeddingKeyReuse": "Reuse Chat API Key",
+    "embeddingModel": "Embedding Model",
+    "embeddingIndexed": "{n} / {total} pages indexed",
+    "embeddingBackfill": "Build Index",
+    "testEmbedding": "Test Embedding",
+    "embeddingConnected": "Embedding connection successful.",
+    "report": "Reports",
+    "reportDesc": "Configure automatic AI report generation",
+    "reportDailyHour": "Daily report hour (0-23)",
+    "reportDaily": "Daily",
+    "reportWeekly": "Weekly",
+    "reportMonthly": "Monthly",
+    "generateNow": "Generate Now",
+    "viewReports": "View Reports"
   },
   "sidepanel": {
     "memory": "Memory",
@@ -90,6 +111,22 @@
     "sessionLoadFailed": "Failed to load session.",
     "deleteChat": "Delete conversation",
     "deleteFailed": "Failed to delete conversation.",
-    "navLabel": "Main navigation"
+    "navLabel": "Main navigation",
+    "viewReports": "View Reports"
+  },
+  "dashboard": {
+    "title": "Report Dashboard",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "noReports": "No reports yet. Click generate to create one.",
+    "generateNow": "Generate Now",
+    "generating": "Generating…",
+    "loadFailed": "Failed to load reports.",
+    "generateFailed": "Failed to generate report.",
+    "topics": "Topics",
+    "sources": "Source Pages",
+    "pageCount": "{n} pages",
+    "pages": "pages"
   }
 }

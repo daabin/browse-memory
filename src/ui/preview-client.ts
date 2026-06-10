@@ -2,6 +2,17 @@ import type { SidePanelClient } from "./runtime-client";
 
 const now = Date.now();
 
+const previewReport = {
+  id: "r1",
+  type: "daily" as const,
+  date: "2026-06-09",
+  title: "2026-06-09 日报",
+  content: "## 今日研究\n重点研究了 RAG 架构。\n## 技术探索\nMV3 实践。",
+  topics: ["RAG", "Chrome 扩展"],
+  pageCount: 18,
+  createdAt: now,
+};
+
 export const previewClient: SidePanelClient = {
   async getSnapshot() {
     return {
@@ -94,6 +105,23 @@ export const previewClient: SidePanelClient = {
     return { id: "m1", sessionId: "s1", role: "user" as const, content: "hi", createdAt: now };
   },
   async deleteChatSession() {},
+  // Phase 2 stubs
+  async getReports() {
+    return [previewReport];
+  },
+  async getReport() {
+    return previewReport;
+  },
+  async generateReport() {
+    return previewReport;
+  },
+  async getEmbeddingStatus() {
+    return { enabled: false, indexedCount: 0, totalCount: 18 };
+  },
+  async getQueueStatus() {
+    return { pending: 0, processing: 0, failed: 0 };
+  },
+  async triggerEmbeddingBackfill() {},
   openUrl() {},
   openOptions() {},
 };

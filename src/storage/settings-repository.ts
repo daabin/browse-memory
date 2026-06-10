@@ -33,6 +33,9 @@ export class SettingsRepository {
         this.database.cryptoKeys,
         this.database.chatSessions,
         this.database.chatMessages,
+        this.database.embeddings,
+        this.database.taskQueue,
+        this.database.reports,
       ],
       async () => {
         await Promise.all([
@@ -43,6 +46,9 @@ export class SettingsRepository {
           this.database.cryptoKeys.clear(),
           this.database.chatSessions.clear(),
           this.database.chatMessages.clear(),
+          this.database.embeddings.clear(),
+          this.database.taskQueue.clear(),
+          this.database.reports.clear(),
         ]);
       },
     );

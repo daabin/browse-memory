@@ -10,6 +10,13 @@ export interface AppSettings {
   minimumReadSeconds: number;
   blacklistPatterns: string[];
   retentionDays: number;
+  // Phase 2
+  embeddingEnabled: boolean;
+  embeddingBaseUrl: string;
+  encryptedEmbeddingApiKey?: EncryptedSecret;
+  embeddingModel: string;
+  embeddingReuseChatKey: boolean;
+  reportDailyHour: number;
 }
 
 export interface PageCapture {
@@ -28,6 +35,7 @@ export interface PageRecord extends PageCapture {
   visitDate: string;
   createdAt: number;
   updatedAt: number;
+  summary?: string;
 }
 
 export interface HighlightRange {
@@ -82,4 +90,45 @@ export interface RagAnswer {
   text: string;
   sources: RagSource[];
   offline: boolean;
+}
+
+// Phase 2: Embedding
+export interface EmbeddingRecord {
+  pageId: string;
+  vector: number[];
+  model: string;
+  createdAt: number;
+}
+
+// Phase 2: Task Queue
+export type TaskType =
+  | "embed"
+  | "summarize"
+  | "report_daily"
+  | "report_weekly"
+  | "report_monthly";
+export type TaskStatus = "pending" | "processing" | "done" | "failed";
+
+export interface TaskRecord {
+  id: string;
+  type: TaskType;
+  status: TaskStatus;
+  payload: unknown;
+  retries: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+// Phase 2: Reports
+export type ReportType = "daily" | "weekly" | "monthly";
+
+export interface ReportRecord {
+  id: string;
+  type: ReportType;
+  date: string;
+  title: string;
+  content: string;
+  topics: string[];
+  pageCount: number;
+  createdAt: number;
 }

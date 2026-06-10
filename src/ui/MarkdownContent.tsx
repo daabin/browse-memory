@@ -1,10 +1,11 @@
 import { type ReactNode } from "react";
 
 /**
- * Lightweight Markdown renderer for assistant chat messages.
+ * Lightweight Markdown renderer.
  *
- * Supported block elements: headings, code blocks, lists (ol/ul), paragraphs.
- * Supported inline elements: bold, italic, inline code, links, citation [n].
+ * Supported block elements: headings, code blocks, lists (ol/ul), blockquotes,
+ * tables, horizontal rules, paragraphs.
+ * Supported inline elements: bold, italic, inline code, links, strikethrough, citation [n].
  */
 
 // ── Inline parsing ──────────────────────────────────────────────────
@@ -13,8 +14,8 @@ type CitationHandler = (index: number) => void;
 
 function parseInline(text: string, onCitation?: CitationHandler): ReactNode[] {
   const nodes: ReactNode[] = [];
-  // Regex order: citation [n], inline code, bold, italic, link [text](url)
-  const INLINE_RE = /(\[(\d+)\])|(`[^`]+`)|(\*\*(.+?)\*\*)|(\*(.+?)\*)|(\[([^\]]+)\]\(([^)]+)\))/g;
+  // Regex order: citation [n], inline code, bold, italic, strikethrough, link [text](url)
+  const INLINE_RE = /(\[(\d+)\])|(`[^`]+`)|(\*\*(.+?)\*\*)|(\*(.+?)\*)|(~~(.+?)~~)|(\[([^\]]+)\]\(([^)]+)\))/g;
 
   let lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -46,11 +47,14 @@ function parseInline(text: string, onCitation?: CitationHandler): ReactNode[] {
     } else if (match[7]) {
       // Italic
       nodes.push(<em key={`i${match.index}`}>{parseInline(match[7], onCitation)}</em>);
-    } else if (match[9] && match[10]) {
+    } else if (match[9]) {
+      // Strikethrough
+      nodes.push(<del key={`d${match.index}`}>{match[9]}</del>);
+    } else if (match[11] && match[12]) {
       // Link
       nodes.push(
-        <a key={`a${match.index}`} href={match[10]} target="_blank" rel="noopener noreferrer" className="md-link">
-          {match[9]}
+        <a key={`a${match.index}`} href={match[12]} target="_blank" rel="noopener noreferrer" className="md-link">
+          {match[11]}
         </a>,
       );
     }
@@ -73,7 +77,22 @@ type Block =
   | { type: "code"; lang: string; text: string }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
+  | { type: "blockquote"; lines: string[] }
+  | { type: "table"; headers: string[]; rows: string[][] }
+  | { type: "hr" }
   | { type: "paragraph"; text: string };
+
+function isSpecialLine(line: string): boolean {
+  return (
+    line.startsWith("```") ||
+    /^#{1,6}\s+/.test(line) ||
+    /^[-*]\s+/.test(line) ||
+    /^\d+\.\s+/.test(line) ||
+    line.startsWith("> ") ||
+    line === ">" ||
+    /^(\*{3,}|-{3,}|_{3,})\s*$/.test(line)
+  );
+}
 
 function parseBlocks(markdown: string): Block[] {
   const lines = markdown.split("\n");
@@ -102,6 +121,39 @@ function parseBlocks(markdown: string): Block[] {
     if (headingMatch) {
       blocks.push({ type: "heading", level: headingMatch[1].length, text: headingMatch[2] });
       i++;
+      continue;
+    }
+
+    // Horizontal rule
+    if (/^(\*{3,}|-{3,}|_{3,})\s*$/.test(line)) {
+      blocks.push({ type: "hr" });
+      i++;
+      continue;
+    }
+
+    // Blockquote
+    if (line.startsWith("> ") || line === ">") {
+      const bqLines: string[] = [];
+      while (i < lines.length && (lines[i].startsWith("> ") || lines[i] === ">")) {
+        bqLines.push(lines[i].replace(/^>\s?/, ""));
+        i++;
+      }
+      blocks.push({ type: "blockquote", lines: bqLines });
+      continue;
+    }
+
+    // Table: header row + separator row + data rows
+    if (line.includes("|") && i + 1 < lines.length && /^\|?[\s\-:|]+\|?$/.test(lines[i + 1])) {
+      const parseRow = (row: string) =>
+        row.replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+      const headers = parseRow(line);
+      i += 2; // skip header + separator
+      const rows: string[][] = [];
+      while (i < lines.length && lines[i].includes("|") && lines[i].trim() !== "") {
+        rows.push(parseRow(lines[i]));
+        i++;
+      }
+      blocks.push({ type: "table", headers, rows });
       continue;
     }
 
@@ -138,10 +190,7 @@ function parseBlocks(markdown: string): Block[] {
     while (
       i < lines.length &&
       lines[i].trim() !== "" &&
-      !lines[i].startsWith("```") &&
-      !/^#{1,6}\s+/.test(lines[i]) &&
-      !/^[-*]\s+/.test(lines[i]) &&
-      !/^\d+\.\s+/.test(lines[i])
+      !isSpecialLine(lines[i])
     ) {
       paraLines.push(lines[i]);
       i++;
@@ -184,6 +233,31 @@ function renderBlock(block: Block, key: number, onCitation?: CitationHandler): R
           ))}
         </ol>
       );
+    case "blockquote":
+      return (
+        <blockquote key={key} className="md-blockquote">
+          {block.lines.map((l, j) => (
+            <p key={j} className="md-p">{parseInline(l, onCitation)}</p>
+          ))}
+        </blockquote>
+      );
+    case "table":
+      return (
+        <div key={key} className="md-table-wrap">
+          <table className="md-table">
+            <thead>
+              <tr>{block.headers.map((h, j) => <th key={j}>{parseInline(h, onCitation)}</th>)}</tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row, ri) => (
+                <tr key={ri}>{row.map((cell, ci) => <td key={ci}>{parseInline(cell, onCitation)}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    case "hr":
+      return <hr key={key} className="md-hr" />;
     case "paragraph":
       return <p key={key} className="md-p">{parseInline(block.text, onCitation)}</p>;
   }

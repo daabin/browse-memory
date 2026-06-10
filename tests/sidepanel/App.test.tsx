@@ -90,6 +90,12 @@ function createClient(): SidePanelClient {
     createChatSession: vi.fn().mockResolvedValue({ id: "s1", title: "test", createdAt: 0, updatedAt: 0 }),
     addChatMessage: vi.fn().mockResolvedValue({ id: "m1", sessionId: "s1", role: "user", content: "hi", createdAt: 0 }),
     deleteChatSession: vi.fn().mockResolvedValue(undefined),
+    getReports: vi.fn().mockResolvedValue([]),
+    getReport: vi.fn().mockResolvedValue(null),
+    generateReport: vi.fn().mockResolvedValue(null),
+    getEmbeddingStatus: vi.fn().mockResolvedValue({ enabled: false, indexedCount: 0, totalCount: 0 }),
+    getQueueStatus: vi.fn().mockResolvedValue({ pending: 0, processing: 0, failed: 0 }),
+    triggerEmbeddingBackfill: vi.fn().mockResolvedValue(undefined),
     openUrl: vi.fn(),
     openOptions: vi.fn(),
   };

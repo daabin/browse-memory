@@ -3,6 +3,8 @@ import type {
   ChatMessageRecord,
   ChatSessionRecord,
   RagAnswer,
+  ReportRecord,
+  ReportType,
   SearchResult,
   TodaySnapshot,
 } from "../shared/types";
@@ -28,6 +30,13 @@ export interface SidePanelClient {
   createChatSession(title: string): Promise<ChatSessionRecord>;
   addChatMessage(sessionId: string, message: Omit<ChatMessageRecord, "id" | "sessionId" | "createdAt">): Promise<ChatMessageRecord>;
   deleteChatSession(sessionId: string): Promise<void>;
+  // Phase 2
+  getReports(type?: ReportType): Promise<ReportRecord[]>;
+  getReport(id: string): Promise<ReportRecord>;
+  generateReport(type: ReportType, date?: string): Promise<ReportRecord>;
+  getEmbeddingStatus(): Promise<{ enabled: boolean; indexedCount: number; totalCount: number }>;
+  getQueueStatus(): Promise<{ pending: number; processing: number; failed: number }>;
+  triggerEmbeddingBackfill(): Promise<void>;
   openUrl(url: string): void;
   openOptions(): void;
 }
@@ -117,6 +126,45 @@ export const runtimeClient: SidePanelClient = {
   },
   async deleteChatSession(sessionId) {
     await send({ type: "DELETE_CHAT_SESSION", sessionId });
+  },
+  // Phase 2
+  async getReports(type) {
+    const response = await send({ type: "GET_REPORTS", reportType: type });
+    if ("reports" in response) {
+      return response.reports;
+    }
+    throw new Error("无法读取报告。");
+  },
+  async getReport(id) {
+    const response = await send({ type: "GET_REPORT", reportId: id });
+    if ("report" in response) {
+      return response.report;
+    }
+    throw new Error("无法读取报告详情。");
+  },
+  async generateReport(type, date) {
+    const response = await send({ type: "GENERATE_REPORT", reportType: type, date });
+    if ("report" in response) {
+      return response.report;
+    }
+    throw new Error("无法生成报告。");
+  },
+  async getEmbeddingStatus() {
+    const response = await send({ type: "GET_EMBEDDING_STATUS" });
+    if ("embeddingStatus" in response) {
+      return response.embeddingStatus;
+    }
+    throw new Error("无法读取 Embedding 状态。");
+  },
+  async getQueueStatus() {
+    const response = await send({ type: "GET_QUEUE_STATUS" });
+    if ("queueStatus" in response) {
+      return response.queueStatus;
+    }
+    throw new Error("无法读取队列状态。");
+  },
+  async triggerEmbeddingBackfill() {
+    await send({ type: "TRIGGER_EMBEDDING_BACKFILL" });
   },
   openUrl(url) {
     void chrome.tabs.create({ url });

@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   CheckCircle2,
   Database,
   Globe2,
@@ -6,6 +7,7 @@ import {
   LoaderCircle,
   Save,
   ShieldCheck,
+  Sparkles,
   Trash2,
   X,
 } from "lucide-react";
@@ -19,7 +21,7 @@ import {
   type OptionsClient,
 } from "../../src/ui/options-client";
 
-type PublicSettings = Omit<AppSettings, "encryptedApiKey">;
+type PublicSettings = Omit<AppSettings, "encryptedApiKey" | "encryptedEmbeddingApiKey">;
 
 const EMPTY_SETTINGS: PublicSettings = {
   chatBaseUrl: "https://api.deepseek.com",
@@ -27,6 +29,11 @@ const EMPTY_SETTINGS: PublicSettings = {
   minimumReadSeconds: 5,
   blacklistPatterns: [],
   retentionDays: 90,
+  embeddingEnabled: false,
+  embeddingBaseUrl: "https://api.siliconflow.cn",
+  embeddingModel: "BAAI/bge-m3",
+  embeddingReuseChatKey: true,
+  reportDailyHour: 3,
 };
 
 export function App({
@@ -37,7 +44,10 @@ export function App({
   const t = useT();
   const [settings, setSettings] = useState(EMPTY_SETTINGS);
   const [apiKey, setApiKey] = useState("");
+  const [embeddingApiKey, setEmbeddingApiKey] = useState("");
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [hasEmbeddingApiKey, setHasEmbeddingApiKey] = useState(false);
+  const [embeddingStatus, setEmbeddingStatus] = useState<{ enabled: boolean; indexedCount: number; totalCount: number }>({ enabled: false, indexedCount: 0, totalCount: 0 });
   const [storageBytes, setStorageBytes] = useState(0);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -45,11 +55,17 @@ export function App({
   const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
-    void Promise.all([client.getSettings(), client.getStorageUsage()])
-      .then(([stored, bytes]) => {
+    void Promise.all([
+      client.getSettings(),
+      client.getStorageUsage(),
+      client.getEmbeddingStatus(),
+    ])
+      .then(([stored, bytes, embStatus]) => {
         setSettings(stored.settings);
         setHasApiKey(stored.hasApiKey);
+        setHasEmbeddingApiKey(stored.hasEmbeddingApiKey);
         setStorageBytes(bytes);
+        setEmbeddingStatus(embStatus);
       })
       .catch((loadError: unknown) => {
         setError(
@@ -112,10 +128,14 @@ export function App({
       return;
     }
     void run(async () => {
-      await client.saveSettings(settings, apiKey || undefined);
+      await client.saveSettings(settings, apiKey || undefined, embeddingApiKey || undefined);
       if (apiKey) {
         setHasApiKey(true);
         setApiKey("");
+      }
+      if (embeddingApiKey) {
+        setHasEmbeddingApiKey(true);
+        setEmbeddingApiKey("");
       }
     }, t("settings.saved"));
   };
@@ -130,11 +150,26 @@ export function App({
     );
   };
 
+  const testEmbedding = () => {
+    void run(
+      () => client.testEmbeddingConnection(settings, embeddingApiKey || undefined),
+      t("settings.embeddingConnected"),
+    );
+  };
+
+  const backfill = () => {
+    void run(
+      () => client.triggerEmbeddingBackfill(),
+      t("settings.saved"),
+    );
+  };
+
   const clearData = () => {
     void run(async () => {
       await client.clearAllData();
       setStorageBytes(0);
       setHasApiKey(false);
+      setHasEmbeddingApiKey(false);
       setConfirmClear(false);
     }, t("settings.cleared"));
   };
@@ -208,7 +243,108 @@ export function App({
           </div>
         </section>
 
-        <section className="settings-card">
+        <section className="settings-card embedding-card">
+          <div className="card-heading">
+            <span><Sparkles size={18} /></span>
+            <div><h2>{t("settings.embedding")}</h2><p>{t("settings.embeddingDesc")}</p></div>
+          </div>
+          <div className="form-grid">
+            <label className="wide">
+              <span className="toggle-label">
+                <input
+                  type="checkbox"
+                  checked={settings.embeddingEnabled}
+                  onChange={(event) =>
+                    setSettings({ ...settings, embeddingEnabled: event.target.checked })
+                  }
+                />
+                {t("settings.embeddingEnabled")}
+              </span>
+            </label>
+            {settings.embeddingEnabled ? (
+              <>
+                <label className="wide">
+                  <span>{t("settings.embeddingAddress")}</span>
+                  <input
+                    value={settings.embeddingBaseUrl}
+                    onChange={(event) =>
+                      setSettings({ ...settings, embeddingBaseUrl: event.target.value })
+                    }
+                  />
+                </label>
+                <label>
+                  <span>{t("settings.embeddingModel")}</span>
+                  <input
+                    value={settings.embeddingModel}
+                    onChange={(event) =>
+                      setSettings({ ...settings, embeddingModel: event.target.value })
+                    }
+                  />
+                </label>
+                <label>
+                  <span className="toggle-label">
+                    <input
+                      type="checkbox"
+                      checked={settings.embeddingReuseChatKey}
+                      onChange={(event) =>
+                        setSettings({ ...settings, embeddingReuseChatKey: event.target.checked })
+                      }
+                    />
+                    {t("settings.embeddingKeyReuse")}
+                  </span>
+                </label>
+                {!settings.embeddingReuseChatKey ? (
+                  <label>
+                    <span>{t("settings.embeddingKey")}</span>
+                    <input
+                      type="password"
+                      value={embeddingApiKey}
+                      placeholder={hasEmbeddingApiKey ? t("settings.apiKeyPlaceholder") : t("settings.embeddingKeyPlaceholder")}
+                      onChange={(event) => setEmbeddingApiKey(event.target.value)}
+                    />
+                    {hasEmbeddingApiKey ? <small><CheckCircle2 size={12} /> {t("settings.apiKeySaved")}</small> : null}
+                  </label>
+                ) : null}
+                <div className="wide">
+                  <small>{t("settings.embeddingIndexed", { n: embeddingStatus.indexedCount, total: embeddingStatus.totalCount })}</small>
+                </div>
+              </>
+            ) : null}
+          </div>
+          {settings.embeddingEnabled ? (
+            <div className="action-row">
+              <button className="secondary" type="button" onClick={testEmbedding} disabled={busy}>
+                {t("settings.testEmbedding")}
+              </button>
+              <button className="secondary" type="button" onClick={backfill} disabled={busy}>
+                {t("settings.embeddingBackfill")}
+              </button>
+            </div>
+          ) : null}
+        </section>
+
+        <section className="settings-card report-card">
+          <div className="card-heading">
+            <span><BarChart3 size={18} /></span>
+            <div><h2>{t("settings.report")}</h2><p>{t("settings.reportDesc")}</p></div>
+          </div>
+          <div className="form-grid">
+            <label>
+              <span>{t("settings.reportDailyHour")}</span>
+              <input
+                type="number"
+                min={0}
+                max={23}
+                value={settings.reportDailyHour}
+                onChange={(event) =>
+                  setSettings({ ...settings, reportDailyHour: Number(event.target.value) })
+                }
+              />
+            </label>
+          </div>
+        </section>
+
+        <section className="settings-card capture-card">
           <div className="card-heading">
             <span><ShieldCheck size={18} /></span>
             <div><h2>{t("settings.captureRules")}</h2><p>{t("settings.captureRulesDesc")}</p></div>

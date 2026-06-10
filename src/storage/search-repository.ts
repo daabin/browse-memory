@@ -2,6 +2,10 @@ import {
   loadStoredIndex,
   searchIndex,
 } from "../search/bm25";
+import {
+  reciprocalRankFusion,
+  vectorSearch,
+} from "../search/hybrid-search";
 import { buildSnippet } from "../search/snippet";
 import { tokenize } from "../search/tokenize";
 import type { SearchResult } from "../shared/types";
@@ -28,26 +32,50 @@ export class SearchRepository {
     });
   }
 
-  async search(query: string, limit = 10): Promise<SearchResult[]> {
+  async search(
+    query: string,
+    limit = 10,
+    options?: { embeddingQuery?: number[] },
+  ): Promise<SearchResult[]> {
     const queryTokens = tokenize(query);
-    if (queryTokens.length === 0) {
+    if (queryTokens.length === 0 && !options?.embeddingQuery) {
       return [];
     }
 
-    const [documents, matchingTerms] = await Promise.all([
-      this.database.bm25Documents.toArray(),
-      this.database.bm25Terms
-        .where("term")
-        .anyOf(queryTokens)
-        .toArray(),
-    ]);
+    // BM25 search (always)
+    let bm25Ranked: Array<{ pageId: string; score: number }> = [];
+    if (queryTokens.length > 0) {
+      const [documents, matchingTerms] = await Promise.all([
+        this.database.bm25Documents.toArray(),
+        this.database.bm25Terms
+          .where("term")
+          .anyOf(queryTokens)
+          .toArray(),
+      ]);
 
-    if (documents.length === 0) {
-      return [];
+      if (documents.length > 0) {
+        const index = loadStoredIndex(documents, matchingTerms);
+        bm25Ranked = searchIndex(index, query, limit);
+      }
     }
 
-    const index = loadStoredIndex(documents, matchingTerms);
-    const ranked = searchIndex(index, query, limit);
+    // Hybrid: fuse BM25 + vector results when embedding query is available
+    let ranked: Array<{ pageId: string; score: number }>;
+    if (options?.embeddingQuery) {
+      const allEmbeddings = await this.database.embeddings.toArray();
+      const vectorResults = vectorSearch(
+        allEmbeddings,
+        options.embeddingQuery,
+        limit,
+      );
+      const fused = reciprocalRankFusion(bm25Ranked, vectorResults);
+      ranked = fused
+        .slice(0, limit)
+        .map((r) => ({ pageId: r.pageId, score: r.score }));
+    } else {
+      ranked = bm25Ranked;
+    }
+
     if (ranked.length === 0) {
       return [];
     }
