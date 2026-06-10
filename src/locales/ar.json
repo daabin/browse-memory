@@ -76,6 +76,7 @@
     "memory": "السجل",
     "conversation": "محادثة",
     "openSettings": "فتح الإعدادات",
+        "refresh": "تحديث",
     "closeSettings": "إغلاق الإعدادات",
     "settingsTitle": "إعدادات BrowseMemory",
     "browse": "تمت زيارة",

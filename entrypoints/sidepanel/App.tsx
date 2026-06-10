@@ -8,6 +8,7 @@ import {
   Globe2,
   LoaderCircle,
   MessageCircle,
+  RefreshCw,
   Search,
   Send,
   Settings,
@@ -176,18 +177,17 @@ export function App({
     return () => window.removeEventListener("keydown", focusSearch);
   }, []);
 
-  // Initial load
-  useEffect(() => {
+  // Reload data helper
+  const reloadData = useCallback(() => {
     void Promise.all([
       client.getSnapshot(),
       client.getSettings(),
       client.getDistinctDates(),
     ])
-      .then(([nextSnapshot, settings, dates]) => {
+      .then(([nextSnapshot, settingsResult, dates]) => {
         setSnapshot(nextSnapshot);
-        setHasApiKey(settings.hasApiKey);
+        setHasApiKey(settingsResult.hasApiKey);
         setAllDates(dates);
-        // Load first day
         if (dates.length > 0) {
           void client.getRecordsByDate(dates[0]).then((results) => {
             setLoadedDates([dates[0]]);
@@ -199,6 +199,25 @@ export function App({
         setError(loadError instanceof Error ? loadError.message : t("sidepanel.loadFailed"));
       });
   }, [client, t]);
+
+  // Initial load
+  useEffect(() => {
+    reloadData();
+  }, [reloadData]);
+
+  // Listen for DATA_CHANGED from background (new capture stored)
+  useEffect(() => {
+    if (typeof chrome === "undefined" || !chrome.runtime?.onMessage) {
+      return;
+    }
+    const listener = (message: { type?: string }) => {
+      if (message?.type === "DATA_CHANGED") {
+        reloadData();
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => chrome.runtime.onMessage.removeListener(listener);
+  }, [reloadData]);
 
   // Load chat sessions when switching to conversation mode
   useEffect(() => {
@@ -370,6 +389,14 @@ export function App({
             <i className="status-dot" /> {t("header.today")}
           </span>
         </div>
+        <button
+          className="icon-button"
+          aria-label={t("sidepanel.refresh")}
+          onClick={reloadData}
+          type="button"
+        >
+          <RefreshCw size={17} />
+        </button>
         <button
           className="icon-button"
           aria-label={t("sidepanel.openSettings")}

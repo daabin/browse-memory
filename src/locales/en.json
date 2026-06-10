@@ -76,6 +76,7 @@
     "memory": "Memory",
     "conversation": "Chat",
     "openSettings": "Open settings",
+        "refresh": "Refresh",
     "closeSettings": "Close settings",
     "settingsTitle": "BrowseMemory Settings",
     "browse": "Browsed",

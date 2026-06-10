@@ -76,6 +76,7 @@
     "memory": "记录",
     "conversation": "对话",
     "openSettings": "打开设置",
+        "refresh": "刷新",
     "closeSettings": "关闭设置",
     "settingsTitle": "BrowseMemory 设置",
     "browse": "浏览",

@@ -76,6 +76,7 @@
     "memory": "기록",
     "conversation": "대화",
     "openSettings": "설정 열기",
+        "refresh": "새로고침",
     "closeSettings": "설정 닫기",
     "settingsTitle": "BrowseMemory 설정",
     "browse": "탐색",

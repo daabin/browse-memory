@@ -54,7 +54,15 @@ export default defineBackground(() => {
         await browser.storage.session.remove(SESSION_STORAGE_KEY);
       },
     },
-    async (capture) => application.handle({ type: "STORE_CAPTURE", capture }),
+    async (capture) => {
+      await application.handle({ type: "STORE_CAPTURE", capture });
+      // Notify all extension pages (sidepanel, etc.) that new data was stored
+      try {
+        await chrome.runtime.sendMessage({ type: "DATA_CHANGED", reason: "capture_stored" });
+      } catch {
+        // Ignore "Could not establish connection" when no listeners
+      }
+    },
     () => settings.get(),
   );
 

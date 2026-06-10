@@ -76,6 +76,7 @@
     "memory": "記録",
     "conversation": "チャット",
     "openSettings": "設定を開く",
+        "refresh": "更新",
     "closeSettings": "設定を閉じる",
     "settingsTitle": "BrowseMemory 設定",
     "browse": "閲覧",

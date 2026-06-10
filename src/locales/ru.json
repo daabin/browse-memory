@@ -76,6 +76,7 @@
     "memory": "Память",
     "conversation": "Чат",
     "openSettings": "Открыть настройки",
+        "refresh": "Обновить",
     "closeSettings": "Закрыть настройки",
     "settingsTitle": "Настройки BrowseMemory",
     "browse": "Просмотрено",
