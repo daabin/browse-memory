@@ -158,10 +158,45 @@ export function App({
   };
 
   const backfill = () => {
-    void run(
-      () => client.triggerEmbeddingBackfill(),
-      t("settings.saved"),
-    );
+    void run(async () => {
+      // Save current embedding settings before triggering backfill
+      await client.saveSettings(settings, undefined, embeddingApiKey || undefined);
+      if (embeddingApiKey) {
+        setHasEmbeddingApiKey(true);
+        setEmbeddingApiKey("");
+      }
+      await client.triggerEmbeddingBackfill();
+    }, t("settings.saved"));
+  };
+
+  // Auto-save embedding toggle and related fields immediately on change
+  const updateEmbedding = (patch: Partial<PublicSettings>) => {
+    const next = { ...settings, ...patch };
+    setSettings(next);
+    void client.saveSettings(next).catch(() => {});
+  };
+
+  // Save embedding text fields on blur (not on every keystroke)
+  const saveEmbeddingFields = () => {
+    void client.saveSettings(settings).catch(() => {});
+  };
+
+  // Auto-save embedding API key on blur
+  const saveEmbeddingKey = () => {
+    if (!embeddingApiKey.trim()) return;
+    void client.saveSettings(settings, undefined, embeddingApiKey).then(() => {
+      setHasEmbeddingApiKey(true);
+      setEmbeddingApiKey("");
+    }).catch(() => {});
+  };
+
+  // Auto-save chat API key on blur
+  const saveApiKey = () => {
+    if (!apiKey.trim()) return;
+    void client.saveSettings(settings, apiKey).then(() => {
+      setHasApiKey(true);
+      setApiKey("");
+    }).catch(() => {});
   };
 
   const clearData = () => {
@@ -226,8 +261,9 @@ export function App({
               <input
                 type="password"
                 value={apiKey}
-                placeholder={hasApiKey ? t("settings.apiKeyPlaceholder") : "sk-…"}
+                placeholder={hasApiKey ? t("settings.apiKeyPlaceholder") : "sk-\u2026"}
                 onChange={(event) => setApiKey(event.target.value)}
+                onBlur={saveApiKey}
               />
               {hasApiKey ? <small><CheckCircle2 size={12} /> {t("settings.apiKeySaved")}</small> : null}
             </label>
@@ -255,7 +291,7 @@ export function App({
                   type="checkbox"
                   checked={settings.embeddingEnabled}
                   onChange={(event) =>
-                    setSettings({ ...settings, embeddingEnabled: event.target.checked })
+                    updateEmbedding({ embeddingEnabled: event.target.checked })
                   }
                 />
                 {t("settings.embeddingEnabled")}
@@ -270,6 +306,7 @@ export function App({
                     onChange={(event) =>
                       setSettings({ ...settings, embeddingBaseUrl: event.target.value })
                     }
+                    onBlur={saveEmbeddingFields}
                   />
                 </label>
                 <label>
@@ -279,6 +316,7 @@ export function App({
                     onChange={(event) =>
                       setSettings({ ...settings, embeddingModel: event.target.value })
                     }
+                    onBlur={saveEmbeddingFields}
                   />
                 </label>
                 <label>
@@ -287,7 +325,7 @@ export function App({
                       type="checkbox"
                       checked={settings.embeddingReuseChatKey}
                       onChange={(event) =>
-                        setSettings({ ...settings, embeddingReuseChatKey: event.target.checked })
+                        updateEmbedding({ embeddingReuseChatKey: event.target.checked })
                       }
                     />
                     {t("settings.embeddingKeyReuse")}
@@ -301,6 +339,7 @@ export function App({
                       value={embeddingApiKey}
                       placeholder={hasEmbeddingApiKey ? t("settings.apiKeyPlaceholder") : t("settings.embeddingKeyPlaceholder")}
                       onChange={(event) => setEmbeddingApiKey(event.target.value)}
+                      onBlur={saveEmbeddingKey}
                     />
                     {hasEmbeddingApiKey ? <small><CheckCircle2 size={12} /> {t("settings.apiKeySaved")}</small> : null}
                   </label>
