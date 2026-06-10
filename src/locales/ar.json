@@ -1,0 +1,43 @@
+{
+  "common": { "save": "حفظ", "cancel": "إلغاء", "confirm": "تأكيد", "close": "إغلاق", "delete": "حذف", "loading": "جارٍ التحميل…", "retry": "إعادة المحاولة" },
+  "header": { "settingsAndPrivacy": "الإعدادات والخصوصية", "localFirst": "محلي أولاً", "today": "اليوم" },
+  "settings": {
+    "title": "الإعدادات", "language": "اللغة", "languageDesc": "اختر لغة العرض المفضلة", "aiService": "خدمة الذكاء الاصطناعي", "aiServiceDesc": "متوافق مع OpenAI Chat Completions",
+    "apiAddress": "عنوان API", "chatModel": "نموذج المحادثة", "apiKey": "مفتاح API",
+    "apiKeyPlaceholder": "اتركه فارغاً للاحتفاظ بالمفتاح الحالي", "apiKeySaved": "تم حفظ مفتاح API بأمان",
+    "testConnection": "اختبار الاتصال", "saveSettings": "حفظ الإعدادات",
+    "captureRules": "قواعد الالتقاط", "captureRulesDesc": "التحكم في الصفحات التي يتم تسجيلها",
+    "minReadSeconds": "الحد الأدنى لوقت القراءة (ثانية)", "blacklist": "النطاقات المحظورة",
+    "blacklistHint": "نطاق واحد لكل سطر، يدعم البدل *.example.com.",
+    "storage": "التخزين المحلي", "storageDesc": "يتم تخزين المحتوى والفهرس والإعدادات في هذا المتصفح فقط",
+    "retentionDays": "مدة الاحتفاظ بالبيانات (أيام)", "retentionHint": "سيتم حذف سجلات التصفح والمحادثات التي تتجاوز هذه الأيام تلقائياً (مرة يومياً).",
+    "currentUsage": "الاستخدام الحالي", "clearAllData": "مسح جميع البيانات",
+    "clearTitle": "مسح جميع البيانات المحلية؟",
+    "clearDesc": "سيتم حذف سجلات التصفح وفهرس BM25 وإعدادات API ومفاتيح التشفير نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+    "confirmClear": "تأكيد المسح",
+    "saved": "تم حفظ الإعدادات.", "cleared": "تم مسح البيانات المحلية.", "connected": "تم الاتصال بنجاح.",
+    "invalidUrl": "يرجى إدخال عنوان API HTTPS صالح.", "missingModel": "يرجى إدخال اسم نموذج المحادثة.",
+    "invalidReadTime": "يجب أن يكون الحد الأدنى لوقت القراءة أكبر من 0.", "invalidRetention": "يجب أن تكون مدة الاحتفاظ أكبر من 0 أيام.",
+    "operationFailed": "فشلت العملية، يرجى المحاولة مرة أخرى.", "loadFailed": "فشل تحميل الإعدادات."
+  },
+  "sidepanel": {
+    "memory": "السجل", "conversation": "محادثة",
+    "openSettings": "فتح الإعدادات", "closeSettings": "إغلاق الإعدادات", "settingsTitle": "إعدادات BrowseMemory",
+    "browse": "تمت زيارة", "pages": "صفحات", "readingTime": "وقت القراءة", "minutes": "{n} دقيقة",
+    "deepReading": "قراءة عميقة", "topDomain": "الأكثر زيارة", "noData": "لا توجد بيانات",
+    "searchPlaceholder": "البحث في سجلات التصفح…", "searchLabel": "البحث في سجلات التصفح",
+    "searchResults": "نتائج البحث", "recentRecords": "السجلات الأخيرة",
+    "resultCount": "{n} عناصر", "dayProgress": "{loaded} / {total} أيام",
+    "emptyRecords": "تصفح بعض الصفحات وستظهر سجلاتك الأخيرة هنا.",
+    "noResults": "لم يتم العثور على سجلات تصفح مطابقة.",
+    "chatHistory": "سجل المحادثات", "chatHistoryDesc": "سجل الأسئلة والأجوبة بناءً على بحث BM25 المحلي",
+    "newChat": "محادثة جديدة", "backToList": "العودة إلى القائمة",
+    "noChats": "لا توجد محادثات بعد. انتقل إلى علامة تبويب السجل لبدء طرح الأسئلة.",
+    "inputPlaceholder": "اسأل سجلات التصفح…",
+    "configureAi": "قم بتكوين خدمة الذكاء الاصطناعي في الإعدادات", "online": "متصل", "offline": "غير متصل",
+    "sendQuestion": "إرسال السؤال", "startChat": "اكتب سؤالاً للبدء",
+    "offlineMode": "وضع عدم الاتصال", "footer": "تم تخزين السجلات بأمان محلياً",
+    "loadFailed": "فشل تحميل البيانات.", "searchFailed": "فشل البحث.", "askFailed": "فشل السؤال.",
+    "sessionLoadFailed": "فشل تحميل الجلسة.", "deleteChat": "حذف المحادثة", "deleteFailed": "فشل حذف المحادثة.", "navLabel": "التنقل الرئيسي"
+  }
+}

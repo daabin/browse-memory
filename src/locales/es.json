@@ -1,0 +1,43 @@
+{
+  "common": { "save": "Guardar", "cancel": "Cancelar", "confirm": "Confirmar", "close": "Cerrar", "delete": "Eliminar", "loading": "Cargando…", "retry": "Reintentar" },
+  "header": { "settingsAndPrivacy": "Ajustes y privacidad", "localFirst": "Local primero", "today": "Hoy" },
+  "settings": {
+    "title": "Ajustes", "language": "Idioma", "languageDesc": "Elige tu idioma de visualización preferido", "aiService": "Servicio de IA", "aiServiceDesc": "Compatible con OpenAI Chat Completions",
+    "apiAddress": "URL de API", "chatModel": "Modelo de chat", "apiKey": "Clave API",
+    "apiKeyPlaceholder": "Dejar vacío para mantener la clave actual", "apiKeySaved": "Clave API guardada de forma segura",
+    "testConnection": "Probar conexión", "saveSettings": "Guardar ajustes",
+    "captureRules": "Reglas de captura", "captureRulesDesc": "Controlar qué páginas se registran",
+    "minReadSeconds": "Tiempo mínimo de lectura (seg)", "blacklist": "Dominios bloqueados",
+    "blacklistHint": "Un dominio por línea, soporta comodines *.example.com.",
+    "storage": "Almacenamiento local", "storageDesc": "El contenido, índice y ajustes solo se guardan en este navegador",
+    "retentionDays": "Retención de datos (días)", "retentionHint": "Los registros de navegación y conversaciones que superen estos días se eliminarán automáticamente (una vez al día).",
+    "currentUsage": "Uso actual", "clearAllData": "Borrar todos los datos",
+    "clearTitle": "¿Borrar todos los datos locales?",
+    "clearDesc": "Los registros de navegación, índice BM25, ajustes de API y claves de cifrado se eliminarán permanentemente. Esta acción no se puede deshacer.",
+    "confirmClear": "Confirmar borrado",
+    "saved": "Ajustes guardados.", "cleared": "Datos locales borrados.", "connected": "Conexión exitosa.",
+    "invalidUrl": "Introduzca una URL de API HTTPS válida.", "missingModel": "Introduzca el nombre del modelo de chat.",
+    "invalidReadTime": "El tiempo mínimo de lectura debe ser mayor que 0.", "invalidRetention": "Los días de retención deben ser mayores que 0.",
+    "operationFailed": "La operación falló, inténtelo de nuevo.", "loadFailed": "Error al cargar los ajustes."
+  },
+  "sidepanel": {
+    "memory": "Memoria", "conversation": "Chat",
+    "openSettings": "Abrir ajustes", "closeSettings": "Cerrar ajustes", "settingsTitle": "Ajustes de BrowseMemory",
+    "browse": "Navegadas", "pages": "páginas", "readingTime": "Tiempo de lectura", "minutes": "{n} min",
+    "deepReading": "Lectura profunda", "topDomain": "Más visitado", "noData": "Sin datos",
+    "searchPlaceholder": "Buscar en registros de navegación…", "searchLabel": "Buscar en registros de navegación",
+    "searchResults": "Resultados de búsqueda", "recentRecords": "Registros recientes",
+    "resultCount": "{n} elementos", "dayProgress": "{loaded} / {total} días",
+    "emptyRecords": "Navegue por algunas páginas y sus registros recientes aparecerán aquí.",
+    "noResults": "No se encontraron registros de navegación coincidentes.",
+    "chatHistory": "Historial de chat", "chatHistoryDesc": "Historial de preguntas basado en búsqueda BM25 local",
+    "newChat": "Nuevo chat", "backToList": "Volver a la lista",
+    "noChats": "Aún no hay conversaciones. Cambie a la pestaña Memoria para empezar a preguntar.",
+    "inputPlaceholder": "Preguntar a los registros de navegación…",
+    "configureAi": "Configure el servicio de IA en ajustes", "online": "En línea", "offline": "Sin conexión",
+    "sendQuestion": "Enviar pregunta", "startChat": "Escriba una pregunta para comenzar",
+    "offlineMode": "Modo sin conexión", "footer": "Registros almacenados de forma segura localmente",
+    "loadFailed": "Error al cargar datos.", "searchFailed": "Error en la búsqueda.", "askFailed": "Error en la pregunta.",
+    "sessionLoadFailed": "Error al cargar la sesión.", "deleteChat": "Eliminar conversación", "deleteFailed": "Error al eliminar la conversación.", "navLabel": "Navegación principal"
+  }
+}

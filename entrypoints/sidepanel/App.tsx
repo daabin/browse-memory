@@ -11,15 +11,16 @@ import {
   Send,
   Settings,
   Sparkles,
+  Trash2,
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useT } from "../../src/i18n";
 import type {
   ChatMessageRecord,
   ChatSessionRecord,
   DomainGroup,
-  RagAnswer,
   RagSource,
   SearchResult,
   TodaySnapshot,
@@ -35,21 +36,19 @@ import {
 } from "../../src/ui/runtime-client";
 import { MarkdownContent } from "../../src/ui/MarkdownContent";
 
-const SUGGESTIONS = [
-  "我今天研究了哪些主题？",
-  "最近看过哪些 RAG 方案？",
-  "总结我浏览过的关键观点",
-];
-
 type ChatView = "list" | "detail" | "new";
 
-function formatDateLabel(dateStr: string): string {
+function formatDateLabel(dateStr: string, t: ReturnType<typeof useT>): string {
   const today = new Date().toISOString().slice(0, 10);
-  if (dateStr === today) return "今天";
+  if (dateStr === today) return t("header.today");
   const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
-  if (dateStr === yesterday) return "昨天";
+  if (dateStr === yesterday) {
+    // Use a locale-aware "yesterday" or just show date
+    const y = new Date(dateStr + "T00:00:00");
+    return `${y.getMonth() + 1}/${y.getDate()}`;
+  }
   const d = new Date(dateStr + "T00:00:00");
-  return `${d.getMonth() + 1}月${d.getDate()}日`;
+  return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
 function formatTime(ts: number): string {
@@ -62,6 +61,7 @@ export function App({
 }: {
   client?: SidePanelClient;
 }) {
+  const t = useT();
   const [mode, setMode] = useState<PanelMode>("memory");
   const [snapshot, setSnapshot] = useState<TodaySnapshot>();
   const [hasApiKey, setHasApiKey] = useState(false);
@@ -85,8 +85,13 @@ export function App({
   const [currentSession, setCurrentSession] = useState<ChatSessionRecord | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessageRecord[]>([]);
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState<RagAnswer>();
   const [showSettings, setShowSettings] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
 
   // Initial load
   useEffect(() => {
@@ -108,9 +113,9 @@ export function App({
         }
       })
       .catch((loadError: unknown) => {
-        setError(loadError instanceof Error ? loadError.message : "加载数据失败。");
+        setError(loadError instanceof Error ? loadError.message : t("sidepanel.loadFailed"));
       });
-  }, [client]);
+  }, [client, t]);
 
   // Load chat sessions when switching to conversation mode
   useEffect(() => {
@@ -160,12 +165,12 @@ export function App({
         .search(trimmed)
         .then(setSearchResults)
         .catch((searchError: unknown) => {
-          setError(searchError instanceof Error ? searchError.message : "搜索失败。");
+          setError(searchError instanceof Error ? searchError.message : t("sidepanel.searchFailed"));
         })
         .finally(() => setBusy(false));
     }, 300);
     return () => window.clearTimeout(timer);
-  }, [client, query]);
+  }, [client, query, t]);
 
   const toggleDomain = (domain: string) => {
     setExpandedDomains((prev) => {
@@ -179,48 +184,57 @@ export function App({
   const ask = async (value = question) => {
     const trimmed = value.trim();
     if (!trimmed) return;
-    setQuestion(trimmed);
     setMode("conversation");
     setBusy(true);
     setError("");
-    try {
-      const ragAnswer = await client.ask(trimmed);
-      setAnswer(ragAnswer);
+    setQuestion("");
 
-      // Persist session
-      if (!currentSession) {
+    // Optimistic user message
+    const optimisticUserMsg: ChatMessageRecord = {
+      id: `opt-u-${Date.now()}`,
+      sessionId: currentSession?.id ?? "",
+      role: "user",
+      content: trimmed,
+      createdAt: Date.now(),
+    };
+    setChatMessages((prev) => [...prev, optimisticUserMsg]);
+    if (chatView === "new") setChatView("detail");
+
+    try {
+      // Create session on first message
+      let sessionId = currentSession?.id;
+      if (!sessionId) {
         const session = await client.createChatSession(trimmed);
         setCurrentSession(session);
-        await client.addChatMessage(session.id, { role: "user", content: trimmed });
-        await client.addChatMessage(session.id, {
-          role: "assistant",
-          content: ragAnswer.text,
-          sources: ragAnswer.sources,
-          offline: ragAnswer.offline,
-        });
-        setChatMessages([
-          { id: "tmp-u", sessionId: session.id, role: "user", content: trimmed, createdAt: Date.now() },
-          { id: "tmp-a", sessionId: session.id, role: "assistant", content: ragAnswer.text, sources: ragAnswer.sources, offline: ragAnswer.offline, createdAt: Date.now() + 1 },
-        ]);
-        setChatView("detail");
-      } else {
-        await client.addChatMessage(currentSession.id, { role: "user", content: trimmed });
-        await client.addChatMessage(currentSession.id, {
-          role: "assistant",
-          content: ragAnswer.text,
-          sources: ragAnswer.sources,
-          offline: ragAnswer.offline,
-        });
-        setChatMessages((prev) => [
-          ...prev,
-          { id: "tmp-u2", sessionId: currentSession.id, role: "user", content: trimmed, createdAt: Date.now() },
-          { id: "tmp-a2", sessionId: currentSession.id, role: "assistant", content: ragAnswer.text, sources: ragAnswer.sources, offline: ragAnswer.offline, createdAt: Date.now() + 1 },
-        ]);
+        sessionId = session.id;
+        optimisticUserMsg.sessionId = sessionId;
       }
-      // Clear input on success
-      setQuestion("");
+
+      // Get AI answer with conversation history context
+      const ragAnswer = await client.ask(trimmed, sessionId);
+
+      // Persist user message + assistant message
+      await client.addChatMessage(sessionId, { role: "user", content: trimmed });
+      const assistantMsg = await client.addChatMessage(sessionId, {
+        role: "assistant",
+        content: ragAnswer.text,
+        sources: ragAnswer.sources,
+        offline: ragAnswer.offline,
+      });
+
+      // Replace optimistic user msg + append real assistant msg
+      setChatMessages((prev) => {
+        const withoutOptimistic = prev.filter((m) => m.id !== optimisticUserMsg.id);
+        return [
+          ...withoutOptimistic,
+          { ...optimisticUserMsg, id: crypto.randomUUID() },
+          assistantMsg,
+        ];
+      });
     } catch (askError) {
-      setError(askError instanceof Error ? askError.message : "问答失败。");
+      // Remove optimistic message on failure
+      setChatMessages((prev) => prev.filter((m) => m.id !== optimisticUserMsg.id));
+      setError(askError instanceof Error ? askError.message : t("sidepanel.askFailed"));
     } finally {
       setBusy(false);
     }
@@ -233,16 +247,31 @@ export function App({
       setChatMessages(messages);
       setChatView("detail");
     } catch {
-      setError("无法加载会话详情。");
+      setError(t("sidepanel.sessionLoadFailed"));
     }
   };
 
   const startNewChat = () => {
     setCurrentSession(null);
     setChatMessages([]);
-    setAnswer(undefined);
     setQuestion("");
     setChatView("new");
+  };
+
+  const deleteSession = async (session: ChatSessionRecord, event: React.MouseEvent) => {
+    event.stopPropagation();
+    try {
+      await client.deleteChatSession(session.id);
+      setSessions((prev) => prev.filter((s) => s.id !== session.id));
+      // If deleting the current open session, go back to list
+      if (currentSession?.id === session.id) {
+        setCurrentSession(null);
+        setChatMessages([]);
+        setChatView("list");
+      }
+    } catch {
+      setError(t("sidepanel.deleteFailed"));
+    }
   };
 
   return (
@@ -254,12 +283,12 @@ export function App({
         <div className="brand-copy">
           <strong>BrowseMemory</strong>
           <span>
-            <i className="status-dot" /> 今天
+            <i className="status-dot" /> {t("header.today")}
           </span>
         </div>
         <button
           className="icon-button"
-          aria-label="打开设置"
+          aria-label={t("sidepanel.openSettings")}
           onClick={() => setShowSettings(true)}
           type="button"
         >
@@ -271,10 +300,10 @@ export function App({
         {mode === "memory" ? (
           <>
             <GlassSurface className="snapshot-grid">
-              <Metric icon={<Eye size={16} />} label="浏览" value={snapshot ? String(snapshot.pageCount) : "—"} suffix="页" />
-              <Metric icon={<Clock3 size={16} />} label="阅读时长" value={snapshot ? `${snapshot.readingMinutes} 分钟` : "—"} />
-              <Metric icon={<Sparkles size={16} />} label="深度阅读" value={snapshot ? String(snapshot.deepReadCount) : "—"} suffix="页" />
-              <Metric icon={<Globe2 size={16} />} label="最常访问" value={snapshot?.topDomain ?? "暂无"} compact />
+              <Metric icon={<Eye size={16} />} label={t("sidepanel.browse")} value={snapshot ? String(snapshot.pageCount) : "—"} suffix={t("sidepanel.pages")} />
+              <Metric icon={<Clock3 size={16} />} label={t("sidepanel.readingTime")} value={snapshot ? t("sidepanel.minutes", { n: snapshot.readingMinutes }) : "—"} />
+              <Metric icon={<Sparkles size={16} />} label={t("sidepanel.deepReading")} value={snapshot ? String(snapshot.deepReadCount) : "—"} suffix={t("sidepanel.pages")} />
+              <Metric icon={<Globe2 size={16} />} label={t("sidepanel.topDomain")} value={snapshot?.topDomain ?? t("sidepanel.noData")} compact />
             </GlassSurface>
 
             <div className="search-field">
@@ -282,20 +311,20 @@ export function App({
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="搜索浏览记录…"
-                aria-label="搜索浏览记录"
+                placeholder={t("sidepanel.searchPlaceholder")}
+                aria-label={t("sidepanel.searchLabel")}
               />
               {busy ? <LoaderCircle className="spin" size={17} /> : <kbd>⌘ K</kbd>}
             </div>
 
             <section className="memory-section">
               <div className="list-heading">
-                <h2>{query ? "搜索结果" : "最近记录"}</h2>
+                <h2>{query ? t("sidepanel.searchResults") : t("sidepanel.recentRecords")}</h2>
                 <span>
                   {searchResults
-                    ? `${searchResults.length} 条`
+                    ? t("sidepanel.resultCount", { n: searchResults.length })
                     : allDates.length > 0
-                      ? `${loadedDates.length} / ${allDates.length} 天`
+                      ? t("sidepanel.dayProgress", { loaded: loadedDates.length, total: allDates.length })
                       : ""}
                 </span>
               </div>
@@ -305,6 +334,7 @@ export function App({
                   expandedDomains={expandedDomains}
                   onToggleDomain={toggleDomain}
                   onOpen={client.openUrl}
+                  t={t}
                 />
               ) : (
                 <DayGroupedList
@@ -315,6 +345,7 @@ export function App({
                   onOpen={client.openUrl}
                   hasMore={loadedDates.length < allDates.length}
                   sentinelRef={sentinelRef}
+                  t={t}
                 />
               )}
             </section>
@@ -326,17 +357,17 @@ export function App({
                 <div className="conversation-heading">
                   <span className="sparkle-icon"><Sparkles size={18} /></span>
                   <div>
-                    <h1>对话记录</h1>
-                    <p>基于本地 BM25 检索的问答历史</p>
+                    <h1>{t("sidepanel.chatHistory")}</h1>
+                    <p>{t("sidepanel.chatHistoryDesc")}</p>
                   </div>
-                  <button className="send-button" aria-label="新建对话" onClick={startNewChat} type="button">
+                  <button className="send-button" aria-label={t("sidepanel.newChat")} onClick={startNewChat} type="button">
                     <Send size={17} />
                   </button>
                 </div>
                 {sessions.length === 0 ? (
                   <div className="empty-state">
                     <MessageCircle size={20} />
-                    <p>还没有对话记录，切换到记录页开始提问。</p>
+                    <p>{t("sidepanel.noChats")}</p>
                   </div>
                 ) : (
                   <GlassSurface className="result-list session-list">
@@ -352,6 +383,14 @@ export function App({
                           <strong>{session.title}</strong>
                           <small>{formatTime(session.updatedAt)}</small>
                         </span>
+                        <button
+                          className="icon-button delete-session-btn"
+                          type="button"
+                          aria-label={t("sidepanel.deleteChat")}
+                          onClick={(e) => void deleteSession(session, e)}
+                        >
+                          <Trash2 size={14} />
+                        </button>
                         <ChevronRight size={16} />
                       </button>
                     ))}
@@ -361,12 +400,12 @@ export function App({
             ) : (
               <>
                 <div className="conversation-heading">
-                  <button className="icon-button" aria-label="返回列表" onClick={() => { setChatView("list"); setCurrentSession(null); }} type="button">
+                  <button className="icon-button" aria-label={t("sidepanel.backToList")} onClick={() => { setChatView("list"); setCurrentSession(null); }} type="button">
                     <ArrowLeft size={18} />
                   </button>
                   <div>
-                    <h1>{currentSession?.title ?? "新对话"}</h1>
-                    <p>{currentSession ? formatTime(currentSession.createdAt) : "输入问题开始对话"}</p>
+                    <h1>{currentSession?.title ?? t("sidepanel.newChat")}</h1>
+                    <p>{currentSession ? formatTime(currentSession.createdAt) : t("sidepanel.startChat")}</p>
                   </div>
                 </div>
                 {chatMessages.length > 0 ? (
@@ -374,9 +413,9 @@ export function App({
                     {chatMessages.map((msg) => (
                       <ChatBubble key={msg.id} message={msg} client={client} />
                     ))}
+                    <div ref={chatEndRef} />
                   </div>
                 ) : null}
-                {answer && chatView === "new" ? <AnswerBlock answer={answer} client={client} /> : null}
                 <GlassSurface className="composer">
                   <textarea
                     value={question}
@@ -387,16 +426,16 @@ export function App({
                         if (!busy && question.trim()) void ask();
                       }
                     }}
-                    placeholder="问问浏览记录…"
+                    placeholder={t("sidepanel.inputPlaceholder")}
                     rows={3}
                   />
                   <div>
                     <span>
-                      {!hasApiKey ? "可在设置中配置 AI 服务" : navigator.onLine ? "在线" : "离线"}
+                      {!hasApiKey ? t("sidepanel.configureAi") : navigator.onLine ? t("sidepanel.online") : t("sidepanel.offline")}
                     </span>
                     <button
                       type="button"
-                      aria-label="发送问题"
+                      aria-label={t("sidepanel.sendQuestion")}
                       disabled={busy || !question.trim()}
                       onClick={() => void ask()}
                     >
@@ -410,29 +449,30 @@ export function App({
         )}
 
         {error ? <div className="error-banner">{error}</div> : null}
+
+        <div className="local-status">
+          <i className="status-dot" />
+          {t("sidepanel.footer")}
+        </div>
       </main>
 
       {showSettings ? (
-        <div className="settings-overlay" role="dialog" aria-modal="true" aria-label="设置">
+        <div className="settings-overlay" role="dialog" aria-modal="true" aria-label={t("settings.title")}>
           <div className="settings-overlay-header">
-            <h2>设置</h2>
-            <button className="icon-button" aria-label="关闭设置" onClick={() => setShowSettings(false)} type="button">
+            <h2>{t("settings.title")}</h2>
+            <button className="icon-button" aria-label={t("sidepanel.closeSettings")} onClick={() => setShowSettings(false)} type="button">
               <X size={18} />
             </button>
           </div>
           <iframe
             className="settings-overlay-frame"
             src={chrome.runtime.getURL("options.html")}
-            title="BrowseMemory 设置"
+            title={t("sidepanel.settingsTitle")}
           />
         </div>
       ) : null}
 
       <footer>
-        <div className="local-status">
-          <i className="status-dot" />
-          记录已安全存储在本地
-        </div>
         <ModeSwitch mode={mode} onChange={setMode} />
       </footer>
     </div>
@@ -470,6 +510,7 @@ function DayGroupedList({
   onOpen,
   hasMore,
   sentinelRef,
+  t,
 }: {
   loadedDates: string[];
   dateRecords: Map<string, SearchResult[]>;
@@ -478,12 +519,13 @@ function DayGroupedList({
   onOpen(url: string): void;
   hasMore: boolean;
   sentinelRef: React.MutableRefObject<HTMLDivElement | null>;
+  t: ReturnType<typeof useT>;
 }) {
   if (loadedDates.length === 0) {
     return (
       <div className="empty-state">
         <Search size={20} />
-        <p>浏览几篇网页后，最近记录会出现在这里。</p>
+        <p>{t("sidepanel.emptyRecords")}</p>
       </div>
     );
   }
@@ -496,8 +538,8 @@ function DayGroupedList({
         return (
           <div className="date-section" key={date}>
             <div className="date-header">
-              <span>{formatDateLabel(date)}</span>
-              <small>{results.length} 条</small>
+              <span>{formatDateLabel(date, t)}</span>
+              <small>{t("sidepanel.resultCount", { n: results.length })}</small>
             </div>
             <GlassSurface className="result-list domain-group-list">
               {groups.map((group) => (
@@ -507,6 +549,7 @@ function DayGroupedList({
                   expanded={expandedDomains.has(group.domain)}
                   onToggle={() => onToggleDomain(group.domain)}
                   onOpen={onOpen}
+                  t={t}
                 />
               ))}
             </GlassSurface>
@@ -527,15 +570,17 @@ function SearchResultList({
   expandedDomains,
   onToggleDomain,
   onOpen,
+  t,
 }: {
   results: SearchResult[];
   expandedDomains: Set<string>;
   onToggleDomain(domain: string): void;
   onOpen(url: string): void;
+  t: ReturnType<typeof useT>;
 }) {
   const groups = useMemo(() => groupByDomain(results), [results]);
   if (results.length === 0) {
-    return <div className="empty-state"><p>没有找到相关浏览记录。</p></div>;
+    return <div className="empty-state"><p>{t("sidepanel.noResults")}</p></div>;
   }
   return (
     <GlassSurface className="result-list domain-group-list">
@@ -546,13 +591,14 @@ function SearchResultList({
           expanded={expandedDomains.has(group.domain)}
           onToggle={() => onToggleDomain(group.domain)}
           onOpen={onOpen}
+          t={t}
         />
       ))}
     </GlassSurface>
   );
 }
 
-function DomainGroupItem({ group, expanded, onToggle, onOpen }: { group: DomainGroup; expanded: boolean; onToggle(): void; onOpen(url: string): void }) {
+function DomainGroupItem({ group, expanded, onToggle, onOpen, t }: { group: DomainGroup; expanded: boolean; onToggle(): void; onOpen(url: string): void; t: ReturnType<typeof useT> }) {
   return (
     <div className="domain-group">
       <button className="domain-header" type="button" onClick={onToggle}>
@@ -567,14 +613,14 @@ function DomainGroupItem({ group, expanded, onToggle, onOpen }: { group: DomainG
         </span>
         <span className="domain-header-copy">
           <strong>{group.domain}</strong>
-          <small>{group.pages.length} 页 · {Math.max(1, Math.round(group.totalDurationSeconds / 60))} 分钟</small>
+          <small>{group.pages.length} {t("sidepanel.pages")} · {t("sidepanel.minutes", { n: Math.max(1, Math.round(group.totalDurationSeconds / 60)) })}</small>
         </span>
         <ChevronDown size={16} className={`domain-chevron${expanded ? " expanded" : ""}`} />
       </button>
       {expanded ? (
         <div className="domain-children">
           {group.pages.map((result) => (
-            <PageRow key={result.page.id} result={result} onOpen={onOpen} />
+            <PageRow key={result.page.id} result={result} onOpen={onOpen} t={t} />
           ))}
         </div>
       ) : null}
@@ -582,13 +628,13 @@ function DomainGroupItem({ group, expanded, onToggle, onOpen }: { group: DomainG
   );
 }
 
-function PageRow({ result, onOpen }: { result: SearchResult; onOpen(url: string): void }) {
+function PageRow({ result, onOpen, t }: { result: SearchResult; onOpen(url: string): void; t: ReturnType<typeof useT> }) {
   return (
     <button className="result-row" type="button" onClick={() => onOpen(result.page.url)}>
       <span className="page-dot" />
       <span className="result-copy">
         <strong>{result.page.title}</strong>
-        <small>{Math.max(1, Math.round(result.page.durationSeconds / 60))} 分钟</small>
+        <small>{t("sidepanel.minutes", { n: Math.max(1, Math.round(result.page.durationSeconds / 60)) })}</small>
         <span>{result.snippet}</span>
       </span>
       <ChevronRight size={16} />
@@ -610,6 +656,7 @@ function ChatBubble({ message, client }: { message: ChatMessageRecord; client: S
 }
 
 function AnswerInline({ text, sources, offline, client }: { text: string; sources: RagSource[]; offline: boolean; client: SidePanelClient }) {
+  const t = useT();
   const sourceMap = new Map(sources.map((s) => [s.index, s.url]));
   const handleCitation = (index: number) => {
     const url = sourceMap.get(index);
@@ -617,7 +664,7 @@ function AnswerInline({ text, sources, offline, client }: { text: string; source
   };
   return (
     <div className="answer-block">
-      {offline ? <span className="offline-label">离线模式</span> : null}
+      {offline ? <span className="offline-label">{t("sidepanel.offlineMode")}</span> : null}
       <MarkdownContent text={text} onCitation={handleCitation} />
       {sources.length > 0 ? (
         <div className="sources">
@@ -630,8 +677,4 @@ function AnswerInline({ text, sources, offline, client }: { text: string; source
       ) : null}
     </div>
   );
-}
-
-function AnswerBlock({ answer, client }: { answer: RagAnswer; client: SidePanelClient }) {
-  return <AnswerInline text={answer.text} sources={answer.sources} offline={answer.offline} client={client} />;
 }

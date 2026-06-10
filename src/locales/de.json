@@ -1,0 +1,43 @@
+{
+  "common": { "save": "Speichern", "cancel": "Abbrechen", "confirm": "Bestätigen", "close": "Schließen", "delete": "Löschen", "loading": "Laden…", "retry": "Erneut versuchen" },
+  "header": { "settingsAndPrivacy": "Einstellungen & Datenschutz", "localFirst": "Lokal zuerst", "today": "Heute" },
+  "settings": {
+    "title": "Einstellungen", "language": "Sprache", "languageDesc": "Bevorzugte Anzeigesprache wählen", "aiService": "KI-Dienst", "aiServiceDesc": "OpenAI Chat Completions kompatibel",
+    "apiAddress": "API-URL", "chatModel": "Chat-Modell", "apiKey": "API-Schlüssel",
+    "apiKeyPlaceholder": "Leer lassen, um bestehenden Schlüssel zu behalten", "apiKeySaved": "API-Schlüssel sicher gespeichert",
+    "testConnection": "Verbindung testen", "saveSettings": "Einstellungen speichern",
+    "captureRules": "Erfassungsregeln", "captureRulesDesc": "Steuern, welche Seiten aufgezeichnet werden",
+    "minReadSeconds": "Min. Lesezeit (Sekunden)", "blacklist": "Blockierte Domains",
+    "blacklistHint": "Eine Domain pro Zeile, unterstützt *.example.com Platzhalter.",
+    "storage": "Lokaler Speicher", "storageDesc": "Inhalte, Index und Einstellungen werden nur in diesem Browser gespeichert",
+    "retentionDays": "Datenaufbewahrung (Tage)", "retentionHint": "Browserverlauf und Unterhaltungen, die diese Tage überschreiten, werden automatisch gelöscht (einmal täglich).",
+    "currentUsage": "Aktuelle Nutzung", "clearAllData": "Alle Daten löschen",
+    "clearTitle": "Alle lokalen Daten löschen?",
+    "clearDesc": "Browserverlauf, BM25-Index, API-Einstellungen und Verschlüsselungsschlüssel werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "confirmClear": "Löschen bestätigen",
+    "saved": "Einstellungen gespeichert.", "cleared": "Lokale Daten gelöscht.", "connected": "Verbindung erfolgreich.",
+    "invalidUrl": "Bitte geben Sie eine gültige HTTPS-API-URL ein.", "missingModel": "Bitte geben Sie einen Chat-Modellnamen ein.",
+    "invalidReadTime": "Die minimale Lesezeit muss größer als 0 sein.", "invalidRetention": "Die Datenaufbewahrungstage müssen größer als 0 sein.",
+    "operationFailed": "Vorgang fehlgeschlagen, bitte erneut versuchen.", "loadFailed": "Einstellungen konnten nicht geladen werden."
+  },
+  "sidepanel": {
+    "memory": "Verlauf", "conversation": "Chat",
+    "openSettings": "Einstellungen öffnen", "closeSettings": "Einstellungen schließen", "settingsTitle": "BrowseMemory Einstellungen",
+    "browse": "Besucht", "pages": "Seiten", "readingTime": "Lesezeit", "minutes": "{n} Min",
+    "deepReading": "Tiefes Lesen", "topDomain": "Meistbesucht", "noData": "Keine Daten",
+    "searchPlaceholder": "Browserverlauf durchsuchen…", "searchLabel": "Browserverlauf durchsuchen",
+    "searchResults": "Suchergebnisse", "recentRecords": "Neueste Einträge",
+    "resultCount": "{n} Einträge", "dayProgress": "{loaded} / {total} Tage",
+    "emptyRecords": "Durchsuchen Sie einige Seiten und Ihre neuesten Einträge erscheinen hier.",
+    "noResults": "Keine passenden Browserverlauf-Einträge gefunden.",
+    "chatHistory": "Chat-Verlauf", "chatHistoryDesc": "Q&A-Verlauf basierend auf lokaler BM25-Suche",
+    "newChat": "Neuer Chat", "backToList": "Zurück zur Liste",
+    "noChats": "Noch keine Unterhaltungen. Wechseln Sie zum Verlauf-Tab, um Fragen zu stellen.",
+    "inputPlaceholder": "Browserverlauf fragen…",
+    "configureAi": "KI-Dienst in den Einstellungen konfigurieren", "online": "Online", "offline": "Offline",
+    "sendQuestion": "Frage senden", "startChat": "Frage eingeben, um zu beginnen",
+    "offlineMode": "Offline-Modus", "footer": "Einträge sicher lokal gespeichert",
+    "loadFailed": "Daten konnten nicht geladen werden.", "searchFailed": "Suche fehlgeschlagen.", "askFailed": "Q&A fehlgeschlagen.",
+    "sessionLoadFailed": "Sitzung konnte nicht geladen werden.", "deleteChat": "Unterhaltung löschen", "deleteFailed": "Unterhaltung konnte nicht gelöscht werden.", "navLabel": "Hauptnavigation"
+  }
+}

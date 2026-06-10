@@ -1,3 +1,4 @@
+import type { ChatMessage } from "./openai-client";
 import type { RagAnswer, SearchResult } from "../shared/types";
 
 import { resolveCitations } from "./citations";
@@ -21,6 +22,7 @@ export class RagService {
     results: SearchResult[],
     configuration: RagConfiguration | undefined,
     online: boolean,
+    history: ChatMessage[] = [],
   ): Promise<RagAnswer> {
     const context = buildRagContext(results);
     if (!online || !configuration) {
@@ -36,17 +38,18 @@ export class RagService {
       };
     }
 
+    const userContent = `浏览记录：\n${context.text}\n\n问题：${question}`;
+    const messages: ChatMessage[] = [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...history,
+      { role: "user", content: userContent },
+    ];
+
     const text = await this.client.chat({
       baseUrl: configuration.baseUrl,
       apiKey: configuration.apiKey,
       model: configuration.model,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: `浏览记录：\n${context.text}\n\n问题：${question}`,
-        },
-      ],
+      messages,
     });
     return {
       text,

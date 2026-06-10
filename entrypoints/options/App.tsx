@@ -2,6 +2,7 @@ import {
   BrainCircuit,
   CheckCircle2,
   Database,
+  Globe2,
   KeyRound,
   LoaderCircle,
   Save,
@@ -11,6 +12,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { ALL_LOCALES, LOCALE_NAMES, useLocale, useSetLocale, type Locale } from "../../src/i18n";
+import { useT } from "../../src/i18n";
 import type { AppSettings } from "../../src/shared/types";
 import {
   optionsClient,
@@ -32,6 +35,7 @@ export function App({
 }: {
   client?: OptionsClient;
 }) {
+  const t = useT();
   const [settings, setSettings] = useState(EMPTY_SETTINGS);
   const [apiKey, setApiKey] = useState("");
   const [hasApiKey, setHasApiKey] = useState(false);
@@ -50,10 +54,10 @@ export function App({
       })
       .catch((loadError: unknown) => {
         setError(
-          loadError instanceof Error ? loadError.message : "读取设置失败。",
+          loadError instanceof Error ? loadError.message : t("settings.loadFailed"),
         );
       });
-  }, [client]);
+  }, [client, t]);
 
   const validate = (): boolean => {
     try {
@@ -62,25 +66,25 @@ export function App({
         throw new Error();
       }
     } catch {
-      setError("请输入有效的 HTTPS API 地址。");
+      setError(t("settings.invalidUrl"));
       return false;
     }
     if (!settings.chatModel.trim()) {
-      setError("请输入对话模型名称。");
+      setError(t("settings.missingModel"));
       return false;
     }
     if (
       !Number.isFinite(settings.minimumReadSeconds) ||
       settings.minimumReadSeconds < 1
     ) {
-      setError("最低阅读时长必须大于 0 秒。");
+      setError(t("settings.invalidReadTime"));
       return false;
     }
     if (
       !Number.isFinite(settings.retentionDays) ||
       settings.retentionDays < 1
     ) {
-      setError("数据保留天数必须大于 0 天。");
+      setError(t("settings.invalidRetention"));
       return false;
     }
     return true;
@@ -97,7 +101,7 @@ export function App({
       setError(
         operationError instanceof Error
           ? operationError.message
-          : "操作失败，请重试。",
+          : t("settings.operationFailed"),
       );
     } finally {
       setBusy(false);
@@ -114,7 +118,7 @@ export function App({
         setHasApiKey(true);
         setApiKey("");
       }
-    }, "设置已保存。");
+    }, t("settings.saved"));
   };
 
   const testConnection = () => {
@@ -123,7 +127,7 @@ export function App({
     }
     void run(
       () => client.testConnection(settings, apiKey || undefined),
-      "连接成功。",
+      t("settings.connected"),
     );
   };
 
@@ -133,7 +137,7 @@ export function App({
       setStorageBytes(0);
       setHasApiKey(false);
       setConfirmClear(false);
-    }, "本地数据已清除。");
+    }, t("settings.cleared"));
   };
 
   return (
@@ -144,22 +148,30 @@ export function App({
         </div>
         <div>
           <h1>BrowseMemory</h1>
-          <p>设置与隐私</p>
+          <p>{t("header.settingsAndPrivacy")}</p>
         </div>
-        <span className="privacy-pill"><ShieldCheck size={14} /> 本地优先</span>
+        <span className="privacy-pill"><ShieldCheck size={14} /> {t("header.localFirst")}</span>
       </header>
 
       <main>
+        <section className="settings-card">
+          <div className="card-heading">
+            <span><Globe2 size={18} /></span>
+            <div><h2>{t("settings.language")}</h2><p>{t("settings.languageDesc")}</p></div>
+          </div>
+          <LanguageSelector />
+        </section>
+
         <section className="settings-card ai-card">
           <div className="card-heading">
             <span><KeyRound size={18} /></span>
-            <div><h2>AI 服务</h2><p>兼容 OpenAI Chat Completions 接口</p></div>
+            <div><h2>{t("settings.aiService")}</h2><p>{t("settings.aiServiceDesc")}</p></div>
           </div>
           <div className="form-grid">
             <label className="wide">
-              <span>API 地址</span>
+              <span>{t("settings.apiAddress")}</span>
               <input
-                aria-label="API 地址"
+                aria-label={t("settings.apiAddress")}
                 value={settings.chatBaseUrl}
                 onChange={(event) =>
                   setSettings({ ...settings, chatBaseUrl: event.target.value })
@@ -167,7 +179,7 @@ export function App({
               />
             </label>
             <label>
-              <span>对话模型</span>
+              <span>{t("settings.chatModel")}</span>
               <input
                 value={settings.chatModel}
                 onChange={(event) =>
@@ -176,23 +188,23 @@ export function App({
               />
             </label>
             <label>
-              <span>API Key</span>
+              <span>{t("settings.apiKey")}</span>
               <input
                 type="password"
                 value={apiKey}
-                placeholder={hasApiKey ? "留空以保留现有 Key" : "sk-…"}
+                placeholder={hasApiKey ? t("settings.apiKeyPlaceholder") : "sk-…"}
                 onChange={(event) => setApiKey(event.target.value)}
               />
-              {hasApiKey ? <small><CheckCircle2 size={12} /> API Key 已安全保存</small> : null}
+              {hasApiKey ? <small><CheckCircle2 size={12} /> {t("settings.apiKeySaved")}</small> : null}
             </label>
           </div>
           <div className="action-row">
             <button className="secondary" type="button" onClick={testConnection} disabled={busy}>
-              测试连接
+              {t("settings.testConnection")}
             </button>
             <button className="primary" type="button" onClick={save} disabled={busy}>
               {busy ? <LoaderCircle className="spin" size={16} /> : <Save size={16} />}
-              保存设置
+              {t("settings.saveSettings")}
             </button>
           </div>
         </section>
@@ -200,11 +212,11 @@ export function App({
         <section className="settings-card">
           <div className="card-heading">
             <span><ShieldCheck size={18} /></span>
-            <div><h2>采集规则</h2><p>控制哪些页面进入本地记录</p></div>
+            <div><h2>{t("settings.captureRules")}</h2><p>{t("settings.captureRulesDesc")}</p></div>
           </div>
           <div className="form-grid">
             <label>
-              <span>最低阅读时长（秒）</span>
+              <span>{t("settings.minReadSeconds")}</span>
               <input
                 type="number"
                 min={1}
@@ -218,7 +230,7 @@ export function App({
               />
             </label>
             <label className="wide">
-              <span>黑名单域名</span>
+              <span>{t("settings.blacklist")}</span>
               <textarea
                 rows={5}
                 value={settings.blacklistPatterns.join("\n")}
@@ -232,7 +244,7 @@ export function App({
                   })
                 }
               />
-              <small>每行一个域名，支持 *.example.com 通配符。</small>
+              <small>{t("settings.blacklistHint")}</small>
             </label>
           </div>
         </section>
@@ -240,11 +252,11 @@ export function App({
         <section className="settings-card storage-card">
           <div className="card-heading">
             <span><Database size={18} /></span>
-            <div><h2>本地存储</h2><p>正文、索引和设置仅保存在当前浏览器</p></div>
+            <div><h2>{t("settings.storage")}</h2><p>{t("settings.storageDesc")}</p></div>
           </div>
           <div className="form-grid">
             <label>
-              <span>数据保留天数</span>
+              <span>{t("settings.retentionDays")}</span>
               <input
                 type="number"
                 min={1}
@@ -257,13 +269,13 @@ export function App({
                   })
                 }
               />
-              <small>超过该天数的浏览记录和对话将自动清理（每天执行一次）。</small>
+              <small>{t("settings.retentionHint")}</small>
             </label>
           </div>
           <div className="storage-summary">
-            <div><span>当前占用</span><strong>{formatBytes(storageBytes)}</strong></div>
+            <div><span>{t("settings.currentUsage")}</span><strong>{formatBytes(storageBytes)}</strong></div>
             <button className="danger" type="button" onClick={() => setConfirmClear(true)}>
-              <Trash2 size={15} /> 清除所有数据
+              <Trash2 size={15} /> {t("settings.clearAllData")}
             </button>
           </div>
         </section>
@@ -275,13 +287,13 @@ export function App({
       {confirmClear ? (
         <div className="dialog-backdrop" role="presentation">
           <div className="dialog" role="alertdialog" aria-modal="true" aria-labelledby="clear-title">
-            <button className="dialog-close" aria-label="关闭" type="button" onClick={() => setConfirmClear(false)}><X size={17} /></button>
+            <button className="dialog-close" aria-label={t("common.close")} type="button" onClick={() => setConfirmClear(false)}><X size={17} /></button>
             <div className="danger-icon"><Trash2 size={19} /></div>
-            <h2 id="clear-title">清除所有本地数据？</h2>
-            <p>浏览记录、BM25 索引、API 设置和加密密钥都会永久删除，此操作无法撤销。</p>
+            <h2 id="clear-title">{t("settings.clearTitle")}</h2>
+            <p>{t("settings.clearDesc")}</p>
             <div className="dialog-actions">
-              <button type="button" onClick={() => setConfirmClear(false)}>取消</button>
-              <button className="danger-solid" type="button" onClick={clearData}>确认清除</button>
+              <button type="button" onClick={() => setConfirmClear(false)}>{t("common.cancel")}</button>
+              <button className="danger-solid" type="button" onClick={clearData}>{t("settings.confirmClear")}</button>
             </div>
           </div>
         </div>
@@ -294,4 +306,24 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function LanguageSelector() {
+  const locale = useLocale();
+  const setLocale = useSetLocale();
+  return (
+    <div className="language-grid">
+      {ALL_LOCALES.map((loc) => (
+        <button
+          key={loc}
+          type="button"
+          className={`language-option${loc === locale ? " active" : ""}`}
+          onClick={() => setLocale(loc)}
+        >
+          {LOCALE_NAMES[loc]}
+          {loc === locale ? <CheckCircle2 size={14} /> : null}
+        </button>
+      ))}
+    </div>
+  );
 }

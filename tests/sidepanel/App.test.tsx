@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { App } from "../../entrypoints/sidepanel/App";
+import { I18nProvider } from "@/i18n";
 import type { SidePanelClient } from "@/ui/runtime-client";
 
 const TODAY = "2026-06-09";
@@ -88,14 +89,19 @@ function createClient(): SidePanelClient {
     getChatSession: vi.fn().mockResolvedValue({ session: { id: "s1", title: "test", createdAt: 0, updatedAt: 0 }, messages: [] }),
     createChatSession: vi.fn().mockResolvedValue({ id: "s1", title: "test", createdAt: 0, updatedAt: 0 }),
     addChatMessage: vi.fn().mockResolvedValue({ id: "m1", sessionId: "s1", role: "user", content: "hi", createdAt: 0 }),
+    deleteChatSession: vi.fn().mockResolvedValue(undefined),
     openUrl: vi.fn(),
     openOptions: vi.fn(),
   };
 }
 
+function renderWithI18n(ui: React.ReactElement) {
+  return render(<I18nProvider locale="zh_CN">{ui}</I18nProvider>);
+}
+
 describe("side panel App", () => {
   it("renders the compact today snapshot", async () => {
-    render(<App client={createClient()} />);
+    renderWithI18n(<App client={createClient()} />);
 
     expect(await screen.findByText("18")).toBeInTheDocument();
     expect(screen.getByText("62 分钟")).toBeInTheDocument();
@@ -103,7 +109,7 @@ describe("side panel App", () => {
   });
 
   it("groups pages by domain within a date section", async () => {
-    render(<App client={createClient()} />);
+    renderWithI18n(<App client={createClient()} />);
 
     // Date header should be visible
     expect(await screen.findByText("今天")).toBeInTheDocument();
@@ -119,7 +125,7 @@ describe("side panel App", () => {
   });
 
   it("expands a domain group on click", async () => {
-    render(<App client={createClient()} />);
+    renderWithI18n(<App client={createClient()} />);
 
     await screen.findByText("other.org");
     const headers = await screen.findAllByText("example.com");
@@ -135,14 +141,14 @@ describe("side panel App", () => {
   });
 
   it("does not show ask card in memory tab", async () => {
-    render(<App client={createClient()} />);
+    renderWithI18n(<App client={createClient()} />);
     await screen.findByText("18");
-    // The ask card heading should not be present
-    expect(screen.queryByText("问问浏览记录")).not.toBeInTheDocument();
+    // The conversation-view heading should not be present in memory tab
+    expect(screen.queryByText("对话记录")).not.toBeInTheDocument();
   });
 
   it("switches to conversation mode and shows session list", async () => {
-    render(<App client={createClient()} />);
+    renderWithI18n(<App client={createClient()} />);
     await screen.findByText("18");
     fireEvent.click(screen.getByRole("button", { name: "对话" }));
 
@@ -153,7 +159,7 @@ describe("side panel App", () => {
   it("debounces search input", async () => {
     vi.useFakeTimers();
     const client = createClient();
-    render(<App client={client} />);
+    renderWithI18n(<App client={client} />);
     fireEvent.change(screen.getByPlaceholderText("搜索浏览记录…"), {
       target: { value: "browser rag" },
     });
@@ -190,7 +196,7 @@ describe("side panel App", () => {
         },
       },
     ]);
-    render(<App client={client} />);
+    renderWithI18n(<App client={client} />);
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(100);

@@ -84,4 +84,18 @@ export class ChatRepository {
       .sortBy("createdAt");
     return { session, messages };
   }
+
+  async deleteSession(sessionId: string): Promise<void> {
+    await this.database.transaction(
+      "rw",
+      [this.database.chatSessions, this.database.chatMessages],
+      async () => {
+        await this.database.chatMessages
+          .where("sessionId")
+          .equals(sessionId)
+          .delete();
+        await this.database.chatSessions.delete(sessionId);
+      },
+    );
+  }
 }

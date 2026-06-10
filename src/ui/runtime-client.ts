@@ -22,11 +22,12 @@ export interface SidePanelClient {
   getDistinctDates(): Promise<string[]>;
   getRecordsByDate(date: string): Promise<SearchResult[]>;
   search(query: string): Promise<SearchResult[]>;
-  ask(question: string): Promise<RagAnswer>;
+  ask(question: string, sessionId?: string): Promise<RagAnswer>;
   listChatSessions(): Promise<ChatSessionRecord[]>;
   getChatSession(id: string): Promise<{ session: ChatSessionRecord; messages: ChatMessageRecord[] }>;
   createChatSession(title: string): Promise<ChatSessionRecord>;
   addChatMessage(sessionId: string, message: Omit<ChatMessageRecord, "id" | "sessionId" | "createdAt">): Promise<ChatMessageRecord>;
+  deleteChatSession(sessionId: string): Promise<void>;
   openUrl(url: string): void;
   openOptions(): void;
 }
@@ -74,11 +75,12 @@ export const runtimeClient: SidePanelClient = {
     }
     throw new Error("搜索失败。");
   },
-  async ask(question) {
+  async ask(question, sessionId) {
     const response = await send({
       type: "ASK",
       question,
       online: navigator.onLine,
+      sessionId,
     });
     if ("answer" in response) {
       return response.answer;
@@ -112,6 +114,9 @@ export const runtimeClient: SidePanelClient = {
       return response.message;
     }
     throw new Error("无法保存消息。");
+  },
+  async deleteChatSession(sessionId) {
+    await send({ type: "DELETE_CHAT_SESSION", sessionId });
   },
   openUrl(url) {
     void chrome.tabs.create({ url });

@@ -19,7 +19,7 @@ export type RuntimeRequest =
   | { type: "GET_TODAY_SNAPSHOT" }
   | { type: "GET_DISTINCT_DATES" }
   | { type: "GET_RECORDS_BY_DATE"; date: string }
-  | { type: "ASK"; question: string; online: boolean }
+  | { type: "ASK"; question: string; online: boolean; sessionId?: string }
   | { type: "GET_SETTINGS" }
   | { type: "SAVE_SETTINGS"; settings: Partial<AppSettings>; apiKey?: string }
   | { type: "TEST_CONNECTION"; settings: Partial<AppSettings>; apiKey?: string }
@@ -28,7 +28,8 @@ export type RuntimeRequest =
   | { type: "LIST_CHAT_SESSIONS" }
   | { type: "GET_CHAT_SESSION"; sessionId: string }
   | { type: "CREATE_CHAT_SESSION"; title: string }
-  | { type: "ADD_CHAT_MESSAGE"; sessionId: string; message: Omit<ChatMessageRecord, "id" | "sessionId" | "createdAt"> };
+  | { type: "ADD_CHAT_MESSAGE"; sessionId: string; message: Omit<ChatMessageRecord, "id" | "sessionId" | "createdAt"> }
+  | { type: "DELETE_CHAT_SESSION"; sessionId: string };
 
 export type RuntimeResponse =
   | { ok: true; results: SearchResult[] }

@@ -1,3 +1,4 @@
+import type { ChatMessage } from "../ai/openai-client";
 import { OpenAICompatibleClient } from "../ai/openai-client";
 import { RagService } from "../ai/rag-service";
 import { SecretStore } from "../security/secret-store";
@@ -115,6 +116,21 @@ export class BrowseMemoryApplication {
         const apiKey = settings.encryptedApiKey
           ? await this.secrets.decrypt(settings.encryptedApiKey)
           : undefined;
+
+        // Build conversation history for multi-turn context
+        let history: ChatMessage[] = [];
+        if (request.sessionId) {
+          try {
+            const { messages } = await this.chat.getSession(request.sessionId);
+            history = messages.map((m) => ({
+              role: m.role as "user" | "assistant",
+              content: m.content,
+            }));
+          } catch {
+            // session not found, ignore history
+          }
+        }
+
         return {
           ok: true,
           answer: await this.rag.answer(
@@ -128,6 +144,7 @@ export class BrowseMemoryApplication {
                 }
               : undefined,
             request.online,
+            history,
           ),
         };
       }
@@ -151,6 +168,9 @@ export class BrowseMemoryApplication {
           ok: true,
           message: await this.chat.addMessage(request.sessionId, request.message),
         };
+      case "DELETE_CHAT_SESSION":
+        await this.chat.deleteSession(request.sessionId);
+        return { ok: true };
     }
   }
 }

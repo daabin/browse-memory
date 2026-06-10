@@ -27,7 +27,7 @@ body {
 
 .app-shell {
   min-height: 100vh;
-  padding: 14px 14px 112px;
+  padding: 14px 14px 80px;
 }
 
 .utility-header {
@@ -219,6 +219,16 @@ body {
 .session-row { align-items: center; }
 .session-row .result-copy strong { font-size: 13px; }
 .session-row .result-copy small { margin: 2px 0 0; }
+.delete-session-btn {
+  opacity: 0;
+  flex: 0 0 auto;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--muted);
+  transition: opacity 0.15s, color 0.15s;
+}
+.session-row:hover .delete-session-btn { opacity: 1; }
+.delete-session-btn:hover { color: var(--red, #e53e3e); background: rgba(229, 62, 62, 0.1); }
 
 /* Chat history */
 .chat-history { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
@@ -310,8 +320,19 @@ body {
   background: transparent;
 }
 
-footer { position: fixed; right: 12px; bottom: 10px; left: 12px; z-index: 10; }
-.local-status { margin: 0 0 7px 5px; }
+footer {
+  position: fixed; right: 12px; bottom: 10px; left: 12px; z-index: 10;
+  padding: 8px 0 4px;
+  background: linear-gradient(to top, var(--bg, #f4f3f0) 60%, transparent);
+}
+.local-status {
+  margin: 12px 0 8px 5px;
+  color: var(--muted);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 .mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 15px; background: rgba(250,250,248,.88); box-shadow: 0 10px 34px rgba(30,35,45,.13); backdrop-filter: blur(20px); }
 .mode-switch button { display: flex; align-items: center; justify-content: center; gap: 7px; height: 38px; border: 0; border-radius: 11px; color: #686c75; background: transparent; font-size: 12px; }
 .mode-switch button.active { color: var(--blue); background: rgba(18,104,243,.08); box-shadow: inset 0 0 0 1px rgba(18,104,243,.05); }
@@ -344,6 +365,7 @@ footer { position: fixed; right: 12px; bottom: 10px; left: 12px; z-index: 10; }
     --shadow: 0 10px 30px rgba(0,0,0,.2);
   }
   body { background: #17181a; }
+  footer { background: linear-gradient(to top, #17181a 60%, transparent); }
   .suggestion-row button, .suggestion-grid button { color: #d5d6d9; background: rgba(255,255,255,.04); }
   .domain-header:hover { background: rgba(255,255,255,.04); }
   .answer-block { background: rgba(18,104,243,.09); }

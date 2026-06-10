@@ -1,0 +1,43 @@
+{
+  "common": { "save": "Enregistrer", "cancel": "Annuler", "confirm": "Confirmer", "close": "Fermer", "delete": "Supprimer", "loading": "Chargement…", "retry": "Réessayer" },
+  "header": { "settingsAndPrivacy": "Paramètres et confidentialité", "localFirst": "Local d'abord", "today": "Aujourd'hui" },
+  "settings": {
+    "title": "Paramètres", "language": "Langue", "languageDesc": "Choisissez votre langue d'affichage préférée", "aiService": "Service IA", "aiServiceDesc": "Compatible OpenAI Chat Completions",
+    "apiAddress": "URL de l'API", "chatModel": "Modèle de chat", "apiKey": "Clé API",
+    "apiKeyPlaceholder": "Laisser vide pour conserver la clé actuelle", "apiKeySaved": "Clé API enregistrée en toute sécurité",
+    "testConnection": "Tester la connexion", "saveSettings": "Enregistrer les paramètres",
+    "captureRules": "Règles de capture", "captureRulesDesc": "Contrôler quelles pages sont enregistrées",
+    "minReadSeconds": "Temps de lecture minimum (sec)", "blacklist": "Domaines bloqués",
+    "blacklistHint": "Un domaine par ligne, prend en charge les jokers *.example.com.",
+    "storage": "Stockage local", "storageDesc": "Le contenu, l'index et les paramètres sont stockés uniquement dans ce navigateur",
+    "retentionDays": "Conservation des données (jours)", "retentionHint": "Les enregistrements de navigation et conversations au-delà de ces jours seront automatiquement supprimés (une fois par jour).",
+    "currentUsage": "Utilisation actuelle", "clearAllData": "Effacer toutes les données",
+    "clearTitle": "Effacer toutes les données locales ?",
+    "clearDesc": "Les enregistrements de navigation, l'index BM25, les paramètres API et les clés de chiffrement seront définitivement supprimés. Cette action est irréversible.",
+    "confirmClear": "Confirmer l'effacement",
+    "saved": "Paramètres enregistrés.", "cleared": "Données locales effacées.", "connected": "Connexion réussie.",
+    "invalidUrl": "Veuillez saisir une URL d'API HTTPS valide.", "missingModel": "Veuillez saisir le nom du modèle de chat.",
+    "invalidReadTime": "Le temps de lecture minimum doit être supérieur à 0.", "invalidRetention": "Les jours de conservation doivent être supérieurs à 0.",
+    "operationFailed": "L'opération a échoué, veuillez réessayer.", "loadFailed": "Échec du chargement des paramètres."
+  },
+  "sidepanel": {
+    "memory": "Mémoire", "conversation": "Chat",
+    "openSettings": "Ouvrir les paramètres", "closeSettings": "Fermer les paramètres", "settingsTitle": "Paramètres BrowseMemory",
+    "browse": "Naviguées", "pages": "pages", "readingTime": "Temps de lecture", "minutes": "{n} min",
+    "deepReading": "Lecture approfondie", "topDomain": "Plus visité", "noData": "Aucune donnée",
+    "searchPlaceholder": "Rechercher dans les enregistrements…", "searchLabel": "Rechercher dans les enregistrements de navigation",
+    "searchResults": "Résultats de recherche", "recentRecords": "Enregistrements récents",
+    "resultCount": "{n} éléments", "dayProgress": "{loaded} / {total} jours",
+    "emptyRecords": "Parcourez quelques pages et vos enregistrements récents apparaîtront ici.",
+    "noResults": "Aucun enregistrement de navigation correspondant trouvé.",
+    "chatHistory": "Historique de chat", "chatHistoryDesc": "Historique Q&R basé sur la recherche BM25 locale",
+    "newChat": "Nouveau chat", "backToList": "Retour à la liste",
+    "noChats": "Aucune conversation pour le moment. Passez à l'onglet Mémoire pour commencer à poser des questions.",
+    "inputPlaceholder": "Demander aux enregistrements de navigation…",
+    "configureAi": "Configurez le service IA dans les paramètres", "online": "En ligne", "offline": "Hors ligne",
+    "sendQuestion": "Envoyer la question", "startChat": "Tapez une question pour commencer",
+    "offlineMode": "Mode hors ligne", "footer": "Enregistrements stockés en toute sécurité localement",
+    "loadFailed": "Échec du chargement des données.", "searchFailed": "Échec de la recherche.", "askFailed": "Échec de la question.",
+    "sessionLoadFailed": "Échec du chargement de la session.", "deleteChat": "Supprimer la conversation", "deleteFailed": "Échec de la suppression de la conversation.", "navLabel": "Navigation principale"
+  }
+}

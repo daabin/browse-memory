@@ -93,6 +93,7 @@ export const previewClient: SidePanelClient = {
   async addChatMessage() {
     return { id: "m1", sessionId: "s1", role: "user" as const, content: "hi", createdAt: now };
   },
+  async deleteChatSession() {},
   openUrl() {},
   openOptions() {},
 };

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { App } from "../../entrypoints/options/App";
+import { I18nProvider } from "@/i18n";
 import type { OptionsClient } from "@/ui/options-client";
 
 function createClient(): OptionsClient {
@@ -23,9 +24,13 @@ function createClient(): OptionsClient {
   };
 }
 
+function renderWithI18n(ui: React.ReactElement) {
+  return render(<I18nProvider locale="zh_CN">{ui}</I18nProvider>);
+}
+
 describe("options App", () => {
   it("loads configured values and masks the existing key", async () => {
-    render(<App client={createClient()} />);
+    renderWithI18n(<App client={createClient()} />);
 
     expect(await screen.findByDisplayValue("deepseek-v4-flash")).toBeInTheDocument();
     expect(screen.getByText("API Key 已安全保存")).toBeInTheDocument();
@@ -34,7 +39,7 @@ describe("options App", () => {
 
   it("validates the base URL before saving", async () => {
     const client = createClient();
-    render(<App client={client} />);
+    renderWithI18n(<App client={client} />);
     const input = await screen.findByLabelText("API 地址");
     fireEvent.change(input, { target: { value: "not-a-url" } });
     fireEvent.click(screen.getByRole("button", { name: "保存设置" }));
@@ -45,7 +50,7 @@ describe("options App", () => {
 
   it("requires explicit confirmation before clearing data", async () => {
     const client = createClient();
-    render(<App client={client} />);
+    renderWithI18n(<App client={client} />);
     fireEvent.click(await screen.findByRole("button", { name: "清除所有数据" }));
     expect(client.clearAllData).not.toHaveBeenCalled();
 
