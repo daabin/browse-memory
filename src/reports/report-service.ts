@@ -1,12 +1,10 @@
 import type { OpenAICompatibleClient } from "../ai/openai-client";
 import type { RagConfiguration } from "../ai/rag-service";
-import type { PageRecord, ReportRecord, ReportType } from "../shared/types";
+import type { PageRecord, ReportRecord } from "../shared/types";
 import type { PageRepository } from "../storage/page-repository";
 import type { ReportRepository } from "../storage/report-repository";
 
-const MAX_INPUT_PAGES = 200;
 const MAX_INPUT_CHARS = 8000;
-const MAX_OUTPUT_TOKENS = 2048;
 
 const DEFAULT_LOCALE = "zh_CN";
 

@@ -131,7 +131,7 @@ export function App({
 
         <main className="report-content">
           {selected ? (
-            <ReportDetail report={selected} client={client} t={t} />
+            <ReportDetail report={selected} t={t} />
           ) : (
             <div className="content-empty">
               <BarChart3 size={32} />
@@ -148,11 +148,9 @@ export function App({
 
 function ReportDetail({
   report,
-  client,
   t,
 }: {
   report: ReportRecord;
-  client: DashboardClient;
   t: ReturnType<typeof useT>;
 }) {
   return (
