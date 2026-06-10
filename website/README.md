@@ -10,8 +10,9 @@ python3 -m http.server 4173 --directory website
 
 Open `http://localhost:4173`.
 
-## GitLab Pages
+## GitHub Pages
 
-The repository root `.gitlab-ci.yml` publishes this directory as the Pages
-artifact. Relative asset paths allow the site to work on both project and
-custom domains.
+The repository workflow `.github/workflows/pages.yml` publishes this directory
+as the GitHub Pages artifact. Relative asset paths allow the site to work on
+both project and custom domains. The production custom domain is
+`https://browse-memory.xyz`.

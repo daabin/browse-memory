@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://browsememory.app/sitemap.xml
+Sitemap: https://browse-memory.xyz/sitemap.xml
