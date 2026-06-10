@@ -179,7 +179,7 @@ body {
 .result-row:hover { background: rgba(255,255,255,.48); }
 .result-row > svg { flex: 0 0 auto; margin-top: 17px; color: #a1a4ab; }
 .domain-icon { display: grid; flex: 0 0 auto; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: var(--blue); background: rgba(18,104,243,.08); position: relative; }
-.domain-icon img { position: absolute; border-radius: 3px; }
+.domain-monogram { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; color: hsl(var(--domain-hue) 42% 36%); background: hsl(var(--domain-hue) 72% 91%); font-size: 11px; font-weight: 700; }
 .result-copy { min-width: 0; flex: 1; }
 .result-copy strong, .result-copy small, .result-copy > span { display: block; }
 .result-copy strong { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -216,7 +216,10 @@ body {
 
 /* Session list */
 .session-list { overflow: hidden; }
-.session-row { align-items: center; }
+.session-row { align-items: center; padding: 0; }
+.session-open-button { display: flex; min-width: 0; flex: 1; align-items: center; gap: 10px; padding: 12px; text-align: left; border: 0; background: transparent; }
+.session-open-button > svg:first-child { flex: 0 0 auto; color: var(--blue); }
+.session-open-button > svg:last-child { flex: 0 0 auto; color: #a1a4ab; }
 .session-row .result-copy strong { font-size: 13px; }
 .session-row .result-copy small { margin: 2px 0 0; }
 .delete-session-btn {
@@ -367,6 +370,7 @@ footer {
   body { background: #17181a; }
   footer { background: linear-gradient(to top, #17181a 60%, transparent); }
   .suggestion-row button, .suggestion-grid button { color: #d5d6d9; background: rgba(255,255,255,.04); }
+  .domain-monogram { color: hsl(var(--domain-hue) 70% 82%); background: hsl(var(--domain-hue) 35% 22%); }
   .domain-header:hover { background: rgba(255,255,255,.04); }
   .answer-block { background: rgba(18,104,243,.09); }
   .md-code-block { background: rgba(255,255,255,.06); }

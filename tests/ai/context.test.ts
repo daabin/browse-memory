@@ -37,10 +37,15 @@ describe("buildRagContext", () => {
     expect(built.text.length).toBeLessThanOrEqual(400);
   });
 
-  it("truncates individual page content to fit the budget", () => {
-    const longContent = "A".repeat(20_000);
-    const built = buildRagContext([result(0, longContent)], 500);
+  it("uses the local search snippet instead of leaking stored page content", () => {
+    const searchResult = result(0, "safe local snippet");
+    searchResult.page.content = "private-body-marker";
+
+    const built = buildRagContext([searchResult], 500);
+
     expect(built.text.length).toBeLessThanOrEqual(500);
+    expect(built.text).toContain("safe local snippet");
+    expect(built.text).not.toContain("private-body-marker");
   });
 
   it("handles empty results", () => {

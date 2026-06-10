@@ -140,7 +140,7 @@ describe("PageRepository", () => {
     const DAY = 86_400_000;
     const NOW = 1_700_000_000_000;
 
-    it("deletes pages older than retentionDays and cleans up index", async () => {
+    it("clears expired page content while retaining metadata", async () => {
       // Insert a page 10 days ago
       await pages.upsertCapture(
         {
@@ -168,7 +168,18 @@ describe("PageRepository", () => {
 
       const purged = await pages.purgeExpired(7, NOW);
       expect(purged).toBe(1);
-      expect(await pages.count()).toBe(1);
+      expect(await pages.count()).toBe(2);
+
+      const expired = await database.pages
+        .where("normalizedUrl")
+        .equals("https://example.com/old")
+        .first();
+      expect(expired).toMatchObject({
+        title: "Old Page",
+        url: "https://example.com/old",
+        durationSeconds: 10,
+        content: "",
+      });
 
       // 'ancient' term should be gone
       const ancientTerm = await database.bm25Terms.get("ancient");
@@ -176,6 +187,22 @@ describe("PageRepository", () => {
       // 'fresh' term should still exist
       const freshTerm = await database.bm25Terms.get("fresh");
       expect(freshTerm).toBeDefined();
+    });
+
+    it("does not repeatedly purge an already cleared page", async () => {
+      await pages.upsertCapture(
+        {
+          url: "https://example.com/old",
+          title: "Old Page",
+          content: "ancient content",
+          durationSeconds: 10,
+          capturedAt: NOW - 10 * DAY,
+        },
+        NOW - 10 * DAY,
+      );
+
+      expect(await pages.purgeExpired(7, NOW)).toBe(1);
+      expect(await pages.purgeExpired(7, NOW)).toBe(0);
     });
 
     it("returns 0 when no pages are expired", async () => {

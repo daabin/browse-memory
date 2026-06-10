@@ -1,4 +1,5 @@
 import { tokenize } from "../search/tokenize";
+import { toLocalDateKey } from "../shared/local-date";
 import { normalizeUrl } from "../shared/url-policy";
 import type { PageCapture, PageRecord, TodaySnapshot } from "../shared/types";
 
@@ -86,7 +87,7 @@ export class PageRepository {
               normalizedUrl,
               domain: new URL(capture.url).hostname,
               contentHash: hashContent(capture.content),
-              visitDate: new Date(now).toISOString().slice(0, 10),
+              visitDate: toLocalDateKey(new Date(now)),
               createdAt: now,
               updatedAt: now,
             };
@@ -123,7 +124,7 @@ export class PageRepository {
   }
 
   async getTodaySnapshot(now = new Date()): Promise<TodaySnapshot> {
-    const visitDate = now.toISOString().slice(0, 10);
+    const visitDate = toLocalDateKey(now);
     const pages = await this.database.pages
       .where("visitDate")
       .equals(visitDate)
@@ -159,14 +160,12 @@ export class PageRepository {
         const expiredPages = await this.database.pages
           .where("updatedAt")
           .below(cutoff)
+          .filter((page) => page.content.length > 0)
           .toArray();
         if (expiredPages.length === 0) {
           return 0;
         }
 
-        const pageIds = expiredPages.map((p) => p.id);
-
-        // Incrementally remove each expired page from the term index
         for (const page of expiredPages) {
           const oldDoc = await this.database.bm25Documents.get(page.id);
           if (oldDoc) {
@@ -188,9 +187,12 @@ export class PageRepository {
             }
             await this.database.bm25Documents.delete(page.id);
           }
+          await this.database.pages.update(page.id, {
+            content: "",
+            contentHash: hashContent(""),
+          });
         }
 
-        await this.database.pages.bulkDelete(pageIds);
         return expiredPages.length;
       },
     );

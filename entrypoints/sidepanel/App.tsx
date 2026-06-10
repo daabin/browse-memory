@@ -17,6 +17,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useT } from "../../src/i18n";
+import { toLocalDateKey } from "../../src/shared/local-date";
 import type {
   ChatMessageRecord,
   ChatSessionRecord,
@@ -25,6 +26,7 @@ import type {
   SearchResult,
   TodaySnapshot,
 } from "../../src/shared/types";
+import { DomainIcon } from "../../src/ui/DomainIcon";
 import { GlassSurface } from "../../src/ui/GlassSurface";
 import {
   ModeSwitch,
@@ -39,10 +41,11 @@ import { MarkdownContent } from "../../src/ui/MarkdownContent";
 type ChatView = "list" | "detail" | "new";
 
 function formatDateLabel(dateStr: string, t: ReturnType<typeof useT>): string {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalDateKey();
   if (dateStr === today) return t("header.today");
-  const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
-  if (dateStr === yesterday) {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (dateStr === toLocalDateKey(yesterday)) {
     // Use a locale-aware "yesterday" or just show date
     const y = new Date(dateStr + "T00:00:00");
     return `${y.getMonth() + 1}/${y.getDate()}`;
@@ -66,6 +69,7 @@ export function App({
   const [snapshot, setSnapshot] = useState<TodaySnapshot>();
   const [hasApiKey, setHasApiKey] = useState(false);
   const [query, setQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -92,6 +96,27 @@ export function App({
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
+
+  useEffect(() => {
+    const focusSearch = (event: KeyboardEvent) => {
+      if (
+        event.key.toLowerCase() !== "k" ||
+        (!event.metaKey && !event.ctrlKey) ||
+        event.altKey
+      ) {
+        return;
+      }
+      const input = searchInputRef.current;
+      if (!input) {
+        return;
+      }
+      event.preventDefault();
+      input.focus();
+      input.select();
+    };
+    window.addEventListener("keydown", focusSearch);
+    return () => window.removeEventListener("keydown", focusSearch);
+  }, []);
 
   // Initial load
   useEffect(() => {
@@ -309,6 +334,7 @@ export function App({
             <div className="search-field">
               <Search size={19} />
               <input
+                ref={searchInputRef}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t("sidepanel.searchPlaceholder")}
@@ -372,17 +398,22 @@ export function App({
                 ) : (
                   <GlassSurface className="result-list session-list">
                     {sessions.map((session) => (
-                      <button
+                      <div
                         className="result-row session-row"
-                        type="button"
                         key={session.id}
-                        onClick={() => void openSession(session)}
                       >
-                        <MessageCircle size={16} style={{ flex: "0 0 auto", marginTop: 13, color: "var(--blue)" }} />
-                        <span className="result-copy">
-                          <strong>{session.title}</strong>
-                          <small>{formatTime(session.updatedAt)}</small>
-                        </span>
+                        <button
+                          className="session-open-button"
+                          type="button"
+                          onClick={() => void openSession(session)}
+                        >
+                          <MessageCircle size={16} />
+                          <span className="result-copy">
+                            <strong>{session.title}</strong>
+                            <small>{formatTime(session.updatedAt)}</small>
+                          </span>
+                          <ChevronRight size={16} />
+                        </button>
                         <button
                           className="icon-button delete-session-btn"
                           type="button"
@@ -391,8 +422,7 @@ export function App({
                         >
                           <Trash2 size={14} />
                         </button>
-                        <ChevronRight size={16} />
-                      </button>
+                      </div>
                     ))}
                   </GlassSurface>
                 )}
@@ -603,13 +633,7 @@ function DomainGroupItem({ group, expanded, onToggle, onOpen, t }: { group: Doma
     <div className="domain-group">
       <button className="domain-header" type="button" onClick={onToggle}>
         <span className="domain-icon">
-          <img
-            src={`https://www.google.com/s2/favicons?domain=${group.domain}&sz=32`}
-            alt="" width={17} height={17}
-            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute("style"); }}
-            onLoad={(e) => { (e.target as HTMLImageElement).nextElementSibling?.setAttribute("style", "display:none"); }}
-          />
-          <Globe2 size={17} />
+          <DomainIcon domain={group.domain} />
         </span>
         <span className="domain-header-copy">
           <strong>{group.domain}</strong>

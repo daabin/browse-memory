@@ -5,7 +5,7 @@ export interface RagContext {
   sources: RagSource[];
 }
 
-const MAX_CONTENT_PER_SOURCE = 2_000;
+const MAX_SNIPPET_PER_SOURCE = 2_000;
 
 function truncateContent(content: string, limit: number): string {
   if (content.length <= limit) {
@@ -25,8 +25,8 @@ export function buildRagContext(
     url: page.url,
   }));
   const blocks = selected.map(
-    ({ page }, index) =>
-      `[${index + 1}] ${page.title}\nURL: ${page.url}\n日期: ${page.visitDate} | 阅读: ${Math.max(1, Math.round(page.durationSeconds / 60))} 分钟\n${truncateContent(page.content, MAX_CONTENT_PER_SOURCE)}`,
+    ({ page, snippet }, index) =>
+      `[${index + 1}] ${page.title}\nURL: ${page.url}\n日期: ${page.visitDate} | 阅读: ${Math.max(1, Math.round(page.durationSeconds / 60))} 分钟\n${truncateContent(snippet, MAX_SNIPPET_PER_SOURCE)}`,
   );
 
   return {

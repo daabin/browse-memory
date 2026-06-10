@@ -101,11 +101,15 @@ function renderWithI18n(ui: React.ReactElement) {
 
 describe("side panel App", () => {
   it("renders the compact today snapshot", async () => {
-    renderWithI18n(<App client={createClient()} />);
+    const { container } = renderWithI18n(<App client={createClient()} />);
 
     expect(await screen.findByText("18")).toBeInTheDocument();
     expect(screen.getByText("62 分钟")).toBeInTheDocument();
     expect(screen.getAllByText("example.com").length).toBeGreaterThanOrEqual(1);
+    expect(
+      container.querySelector('img[src*="google.com/s2/favicons"]'),
+    ).not.toBeInTheDocument();
+    expect(container.querySelector(".domain-monogram")).toBeInTheDocument();
   });
 
   it("groups pages by domain within a date section", async () => {
@@ -156,6 +160,18 @@ describe("side panel App", () => {
     expect(screen.getByText("基于本地 BM25 检索的问答历史")).toBeInTheDocument();
   });
 
+  it("renders chat session actions without nesting buttons", async () => {
+    const client = createClient();
+    client.listChatSessions = vi.fn().mockResolvedValue([
+      { id: "s1", title: "RAG notes", createdAt: 0, updatedAt: 0 },
+    ]);
+    const { container } = renderWithI18n(<App client={client} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "对话" }));
+    expect(await screen.findByText("RAG notes")).toBeInTheDocument();
+    expect(container.querySelector("button button")).not.toBeInTheDocument();
+  });
+
   it("debounces search input", async () => {
     vi.useFakeTimers();
     const client = createClient();
@@ -170,6 +186,21 @@ describe("side panel App", () => {
     });
     expect(client.search).toHaveBeenCalledWith("browser rag");
     vi.useRealTimers();
+  });
+
+  it.each([
+    { metaKey: true, ctrlKey: false },
+    { metaKey: false, ctrlKey: true },
+  ])("focuses and selects search with the platform shortcut", async (keys) => {
+    renderWithI18n(<App client={createClient()} />);
+    const input = await screen.findByPlaceholderText("搜索浏览记录…");
+    fireEvent.change(input, { target: { value: "browser rag" } });
+
+    fireEvent.keyDown(window, { key: "k", ...keys });
+
+    expect(input).toHaveFocus();
+    expect(input).toHaveProperty("selectionStart", 0);
+    expect(input).toHaveProperty("selectionEnd", "browser rag".length);
   });
 
   it("shows search results grouped by domain", async () => {

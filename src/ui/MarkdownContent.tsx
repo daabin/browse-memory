@@ -106,10 +106,10 @@ function parseBlocks(markdown: string): Block[] {
     }
 
     // Unordered list
-    if (/^[\-\*]\s+/.test(line)) {
+    if (/^[-*]\s+/.test(line)) {
       const items: string[] = [];
-      while (i < lines.length && /^[\-\*]\s+/.test(lines[i])) {
-        items.push(lines[i].replace(/^[\-\*]\s+/, ""));
+      while (i < lines.length && /^[-*]\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^[-*]\s+/, ""));
         i++;
       }
       blocks.push({ type: "ul", items });
@@ -140,7 +140,7 @@ function parseBlocks(markdown: string): Block[] {
       lines[i].trim() !== "" &&
       !lines[i].startsWith("```") &&
       !/^#{1,6}\s+/.test(lines[i]) &&
-      !/^[\-\*]\s+/.test(lines[i]) &&
+      !/^[-*]\s+/.test(lines[i]) &&
       !/^\d+\.\s+/.test(lines[i])
     ) {
       paraLines.push(lines[i]);

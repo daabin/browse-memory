@@ -1,5 +1,4 @@
 import {
-  BrainCircuit,
   CheckCircle2,
   Database,
   Globe2,
@@ -12,7 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { ALL_LOCALES, LOCALE_NAMES, useLocale, useSetLocale, type Locale } from "../../src/i18n";
+import { ALL_LOCALES, LOCALE_NAMES, useLocale, useSetLocale } from "../../src/i18n";
 import { useT } from "../../src/i18n";
 import type { AppSettings } from "../../src/shared/types";
 import {
