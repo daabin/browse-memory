@@ -15,14 +15,22 @@ function hashContent(value: string): string {
   return (hash >>> 0).toString(16);
 }
 
-function buildIndexRecord(page: PageRecord): Bm25DocumentRecord {
+function buildFrequencies(
+  content: string,
+  title: string,
+): Record<string, number> {
   const frequencies: Record<string, number> = {};
-  for (const token of tokenize(page.content)) {
+  for (const token of tokenize(content)) {
     frequencies[token] = (frequencies[token] ?? 0) + 1;
   }
-  for (const token of tokenize(page.title)) {
+  for (const token of tokenize(title)) {
     frequencies[token] = (frequencies[token] ?? 0) + 2;
   }
+  return frequencies;
+}
+
+function buildIndexRecord(page: PageRecord): Bm25DocumentRecord {
+  const frequencies = buildFrequencies(page.content, page.title);
   return {
     pageId: page.id,
     length: Object.values(frequencies).reduce(
@@ -84,8 +92,12 @@ export class PageRepository {
             };
 
         await this.database.pages.put(page);
-        await this.database.bm25Documents.put(buildIndexRecord(page));
-        await this.rebuildTerms();
+        const newDoc = buildIndexRecord(page);
+        const oldDoc = shouldMerge
+          ? await this.database.bm25Documents.get(previous.id)
+          : undefined;
+        await this.database.bm25Documents.put(newDoc);
+        await this.updateAffectedTerms(page.id, newDoc, oldDoc);
         return page;
       },
     );
@@ -134,29 +146,119 @@ export class PageRepository {
     };
   }
 
-  private async rebuildTerms(): Promise<void> {
-    const documents = await this.database.bm25Documents.toArray();
-    const termMap = new Map<
-      string,
-      Array<{ pageId: string; termFrequency: number }>
-    >();
-    for (const document of documents) {
-      for (const [term, termFrequency] of Object.entries(
-        document.frequencies,
-      )) {
-        const postings = termMap.get(term) ?? [];
-        postings.push({ pageId: document.pageId, termFrequency });
-        termMap.set(term, postings);
+  async purgeExpired(retentionDays: number, now = Date.now()): Promise<number> {
+    const cutoff = now - retentionDays * 86_400_000;
+    return this.database.transaction(
+      "rw",
+      [
+        this.database.pages,
+        this.database.bm25Documents,
+        this.database.bm25Terms,
+      ],
+      async () => {
+        const expiredPages = await this.database.pages
+          .where("updatedAt")
+          .below(cutoff)
+          .toArray();
+        if (expiredPages.length === 0) {
+          return 0;
+        }
+
+        const pageIds = expiredPages.map((p) => p.id);
+
+        // Incrementally remove each expired page from the term index
+        for (const page of expiredPages) {
+          const oldDoc = await this.database.bm25Documents.get(page.id);
+          if (oldDoc) {
+            for (const [term] of Object.entries(oldDoc.frequencies)) {
+              const termRecord = await this.database.bm25Terms.get(term);
+              if (!termRecord) continue;
+              const newPostings = termRecord.postings.filter(
+                (p) => p.pageId !== page.id,
+              );
+              if (newPostings.length === 0) {
+                await this.database.bm25Terms.delete(term);
+              } else {
+                await this.database.bm25Terms.put({
+                  ...termRecord,
+                  postings: newPostings,
+                  documentFrequency: newPostings.length,
+                });
+              }
+            }
+            await this.database.bm25Documents.delete(page.id);
+          }
+        }
+
+        await this.database.pages.bulkDelete(pageIds);
+        return expiredPages.length;
+      },
+    );
+  }
+
+  /**
+   * Incrementally update only the terms affected by a single page upsert,
+   * instead of rebuilding the entire inverted index.
+   */
+  private async updateAffectedTerms(
+    pageId: string,
+    newDoc: Bm25DocumentRecord,
+    oldDoc: Bm25DocumentRecord | undefined,
+  ): Promise<void> {
+    const oldFreqs = oldDoc?.frequencies ?? {};
+    const newFreqs = newDoc.frequencies;
+
+    const affectedTerms = new Set([
+      ...Object.keys(oldFreqs),
+      ...Object.keys(newFreqs),
+    ]);
+
+    // Sequential awaits inside a Dexie transaction keep it alive
+    for (const term of affectedTerms) {
+      const oldTf = oldFreqs[term] ?? 0;
+      const newTf = newFreqs[term] ?? 0;
+      if (oldTf === newTf) continue;
+
+      const record = await this.database.bm25Terms.get(term);
+
+      if (newTf === 0) {
+        // Term no longer appears in this page
+        if (record) {
+          const postings = record.postings.filter(
+            (p) => p.pageId !== pageId,
+          );
+          if (postings.length === 0) {
+            await this.database.bm25Terms.delete(term);
+          } else {
+            await this.database.bm25Terms.put({
+              term,
+              documentFrequency: postings.length,
+              postings,
+            });
+          }
+        }
+      } else if (oldTf === 0) {
+        // New term for this page
+        const postings = record?.postings ?? [];
+        postings.push({ pageId, termFrequency: newTf });
+        await this.database.bm25Terms.put({
+          term,
+          documentFrequency: postings.length,
+          postings,
+        });
+      } else {
+        // Term frequency changed
+        if (record) {
+          const postings = record.postings.map((p) =>
+            p.pageId === pageId ? { ...p, termFrequency: newTf } : p,
+          );
+          await this.database.bm25Terms.put({
+            term,
+            documentFrequency: postings.length,
+            postings,
+          });
+        }
       }
     }
-
-    await this.database.bm25Terms.clear();
-    await this.database.bm25Terms.bulkPut(
-      [...termMap.entries()].map(([term, postings]) => ({
-        term,
-        documentFrequency: postings.length,
-        postings,
-      })),
-    );
   }
 }

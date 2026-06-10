@@ -36,6 +36,14 @@ export class BrowseMemoryApplication {
     this.rag = new RagService(this.client);
   }
 
+  async purgeExpired(): Promise<void> {
+    const settings = await this.settings.get();
+    await Promise.all([
+      this.pages.purgeExpired(settings.retentionDays),
+      this.chat.purgeExpired(settings.retentionDays),
+    ]);
+  }
+
   async handle(request: RuntimeRequest): Promise<RuntimeResponse> {
     switch (request.type) {
       case "PAGE_CHANGED":

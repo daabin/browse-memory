@@ -6,6 +6,7 @@ import {
 } from "../src/background/session-coordinator";
 import {
   HEARTBEAT_ALARM,
+  PURGE_ALARM,
   SESSION_STORAGE_KEY,
 } from "../src/shared/constants";
 import type { RuntimeRequest } from "../src/shared/messages";
@@ -58,8 +59,12 @@ export default defineBackground(() => {
     if (!coordinator.current()) {
       await activateCurrentTab();
     }
+    // Run TTL purge once on startup (fire-and-forget)
+    void application.purgeExpired();
   });
   void browser.alarms.create(HEARTBEAT_ALARM, { periodInMinutes: 1 });
+  // Daily purge alarm (every 24 hours)
+  void browser.alarms.create(PURGE_ALARM, { periodInMinutes: 1440 });
   void chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: true });
 
   browser.tabs.onActivated.addListener(async ({ tabId }) => {
@@ -80,6 +85,8 @@ export default defineBackground(() => {
   browser.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === HEARTBEAT_ALARM) {
       await coordinator.tick();
+    } else if (alarm.name === PURGE_ALARM) {
+      await application.purgeExpired();
     }
   });
   browser.runtime.onMessage.addListener(

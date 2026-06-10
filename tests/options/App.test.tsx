@@ -12,6 +12,7 @@ function createClient(): OptionsClient {
         chatModel: "deepseek-v4-flash",
         minimumReadSeconds: 5,
         blacklistPatterns: ["*.bank.com"],
+        retentionDays: 90,
       },
       hasApiKey: true,
     }),

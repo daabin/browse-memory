@@ -34,6 +34,7 @@ export const optionsClient: OptionsClient = {
         chatModel: response.settings.chatModel,
         minimumReadSeconds: response.settings.minimumReadSeconds,
         blacklistPatterns: response.settings.blacklistPatterns,
+        retentionDays: response.settings.retentionDays,
       };
       return { settings, hasApiKey: response.hasApiKey };
     }

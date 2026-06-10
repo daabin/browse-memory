@@ -24,6 +24,7 @@ const EMPTY_SETTINGS: PublicSettings = {
   chatModel: "deepseek-v4-flash",
   minimumReadSeconds: 5,
   blacklistPatterns: [],
+  retentionDays: 90,
 };
 
 export function App({
@@ -73,6 +74,13 @@ export function App({
       settings.minimumReadSeconds < 1
     ) {
       setError("最低阅读时长必须大于 0 秒。");
+      return false;
+    }
+    if (
+      !Number.isFinite(settings.retentionDays) ||
+      settings.retentionDays < 1
+    ) {
+      setError("数据保留天数必须大于 0 天。");
       return false;
     }
     return true;
@@ -233,6 +241,24 @@ export function App({
           <div className="card-heading">
             <span><Database size={18} /></span>
             <div><h2>本地存储</h2><p>正文、索引和设置仅保存在当前浏览器</p></div>
+          </div>
+          <div className="form-grid">
+            <label>
+              <span>数据保留天数</span>
+              <input
+                type="number"
+                min={1}
+                max={3650}
+                value={settings.retentionDays}
+                onChange={(event) =>
+                  setSettings({
+                    ...settings,
+                    retentionDays: Number(event.target.value),
+                  })
+                }
+              />
+              <small>超过该天数的浏览记录和对话将自动清理（每天执行一次）。</small>
+            </label>
           </div>
           <div className="storage-summary">
             <div><span>当前占用</span><strong>{formatBytes(storageBytes)}</strong></div>

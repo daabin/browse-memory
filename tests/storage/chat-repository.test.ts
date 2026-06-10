@@ -55,4 +55,45 @@ describe("ChatRepository", () => {
   it("throws when getting a non-existent session", async () => {
     await expect(repo.getSession("nonexistent")).rejects.toThrow("会话不存在");
   });
+
+  describe("purgeExpired", () => {
+    const DAY = 86_400_000;
+    const NOW = 1_700_000_000_000;
+
+    it("deletes sessions and messages older than retentionDays", async () => {
+      // Create a session manually with a past timestamp
+      const oldSession = {
+        id: crypto.randomUUID(),
+        title: "Old chat",
+        createdAt: NOW - 10 * DAY,
+        updatedAt: NOW - 10 * DAY,
+      };
+      await database.chatSessions.add(oldSession);
+      await database.chatMessages.add({
+        id: crypto.randomUUID(),
+        sessionId: oldSession.id,
+        role: "user" as const,
+        content: "Old message",
+        createdAt: NOW - 10 * DAY,
+      });
+
+      // Create a fresh session
+      const freshSession = await repo.createSession("Fresh chat");
+      await repo.addMessage(freshSession.id, { role: "user", content: "New message" });
+
+      expect(await database.chatSessions.count()).toBe(2);
+      expect(await database.chatMessages.count()).toBe(2);
+
+      const purged = await repo.purgeExpired(7, NOW);
+      expect(purged).toBe(1);
+      expect(await database.chatSessions.count()).toBe(1);
+      expect(await database.chatMessages.count()).toBe(1);
+    });
+
+    it("returns 0 when no sessions are expired", async () => {
+      await repo.createSession("Recent");
+      const purged = await repo.purgeExpired(7, NOW);
+      expect(purged).toBe(0);
+    });
+  });
 });

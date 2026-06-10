@@ -9,6 +9,7 @@ export interface AppSettings {
   chatModel: string;
   minimumReadSeconds: number;
   blacklistPatterns: string[];
+  retentionDays: number;
 }
 
 export interface PageCapture {

@@ -43,6 +43,33 @@ export class ChatRepository {
       .toArray();
   }
 
+  async purgeExpired(retentionDays: number, now = Date.now()): Promise<number> {
+    const cutoff = now - retentionDays * 86_400_000;
+    return this.database.transaction(
+      "rw",
+      [this.database.chatSessions, this.database.chatMessages],
+      async () => {
+        const expiredSessions = await this.database.chatSessions
+          .where("updatedAt")
+          .below(cutoff)
+          .toArray();
+        if (expiredSessions.length === 0) {
+          return 0;
+        }
+
+        const sessionIds = expiredSessions.map((s) => s.id);
+        for (const sessionId of sessionIds) {
+          await this.database.chatMessages
+            .where("sessionId")
+            .equals(sessionId)
+            .delete();
+        }
+        await this.database.chatSessions.bulkDelete(sessionIds);
+        return expiredSessions.length;
+      },
+    );
+  }
+
   async getSession(sessionId: string): Promise<{
     session: ChatSessionRecord;
     messages: ChatMessageRecord[];
