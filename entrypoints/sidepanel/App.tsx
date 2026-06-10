@@ -102,9 +102,14 @@ export function App({
       const data = event.data;
       if (!data || data.__bm !== "dashboard-request") return;
 
-      // Fire-and-forget (openUrl)
+      // Fire-and-forget (openUrl, openOptions)
       if (data.method === "openUrl") {
         client.openUrl(data.args[0] as string);
+        return;
+      }
+      if (data.method === "openOptions") {
+        setShowDashboard(false);
+        setShowSettings(true);
         return;
       }
 
@@ -537,7 +542,7 @@ export function App({
                 {chatMessages.length > 0 ? (
                   <div className="chat-history">
                     {chatMessages.map((msg) => (
-                      <ChatBubble key={msg.id} message={msg} client={client} />
+                      <ChatBubble key={msg.id} message={msg} client={client} onOpenSettings={() => setShowSettings(true)} />
                     ))}
                     <div ref={chatEndRef} />
                   </div>
@@ -779,12 +784,9 @@ function PageRow({ result, onOpen, t }: { result: SearchResult; onOpen(url: stri
   );
 }
 
-function ChatBubble({ message, client }: { message: ChatMessageRecord; client: SidePanelClient }) {
+function ChatBubble({ message, client, onOpenSettings }: { message: ChatMessageRecord; client: SidePanelClient; onOpenSettings: () => void }) {
   const t = useT();
   const isUser = message.role === "user";
-  const openSettings = () => {
-    try { client.openOptions(); } catch { /* ignore */ }
-  };
   return (
     <div className={`chat-bubble ${isUser ? "user" : "assistant"}`}>
       {isUser ? (
@@ -794,7 +796,7 @@ function ChatBubble({ message, client }: { message: ChatMessageRecord; client: S
           {message.missingApiKey ? (
             <div className="api-key-warning">
               <span>{t("sidepanel.apiKeyMissingHint")}</span>
-              <button className="go-settings-btn" type="button" onClick={openSettings}>
+              <button className="go-settings-btn" type="button" onClick={onOpenSettings}>
                 {t("common.goToSettings")}
               </button>
             </div>

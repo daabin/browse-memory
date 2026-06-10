@@ -93,6 +93,7 @@ export interface DashboardClient {
   getReport(id: string): Promise<ReportRecord>;
   generateReport(type: ReportType, date?: string, locale?: string): Promise<ReportRecord>;
   openUrl(url: string): void;
+  openOptions(): void;
 }
 
 export const dashboardClient: DashboardClient = {
@@ -132,6 +133,11 @@ export const dashboardClient: DashboardClient = {
     } else {
       window.parent.postMessage({ __bm: "dashboard-request", id: "", method: "openUrl", args: [url] }, "*");
     }
+  },
+
+  openOptions() {
+    // Always use bridge to let the sidepanel open its settings overlay
+    window.parent.postMessage({ __bm: "dashboard-request", id: "", method: "openOptions", args: [] }, "*");
   },
 };
 

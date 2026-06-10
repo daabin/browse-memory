@@ -79,9 +79,7 @@ export function App({
 
   const openSettings = () => {
     try {
-      if (typeof chrome !== "undefined" && chrome.runtime?.openOptionsPage) {
-        void chrome.runtime.openOptionsPage();
-      }
+      client.openOptions();
     } catch {
       // ignore
     }

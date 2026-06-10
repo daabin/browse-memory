@@ -35,6 +35,7 @@ function createClient(overrides?: Partial<DashboardClient>): DashboardClient {
     getReport: vi.fn().mockResolvedValue(sampleReports[0]),
     generateReport: vi.fn().mockResolvedValue(sampleReports[0]),
     openUrl: vi.fn(),
+    openOptions: vi.fn(),
     ...overrides,
   };
 }
