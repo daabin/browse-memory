@@ -293,16 +293,19 @@ export class BrowseMemoryApplication {
           model: settings.chatModel,
         };
         const date = request.date;
+        const locale = request.locale ?? "zh_CN";
+        // User-triggered: always force regenerate to overwrite stale reports
+        const force = true;
         let report;
         switch (request.reportType as ReportType) {
           case "daily":
-            report = await this.reportService.generateDaily(date ?? new Date().toISOString().slice(0, 10), ragConfig);
+            report = await this.reportService.generateDaily(date ?? new Date().toISOString().slice(0, 10), ragConfig, locale, force);
             break;
           case "weekly":
-            report = await this.reportService.generateWeekly(date ?? getCurrentWeekId(), ragConfig);
+            report = await this.reportService.generateWeekly(date ?? getCurrentWeekId(), ragConfig, locale, force);
             break;
           case "monthly":
-            report = await this.reportService.generateMonthly(date ?? getCurrentMonthId(), ragConfig);
+            report = await this.reportService.generateMonthly(date ?? getCurrentMonthId(), ragConfig, locale, force);
             break;
         }
         return { ok: true, report };

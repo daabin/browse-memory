@@ -35,7 +35,7 @@ export type RuntimeRequest =
   | { type: "DELETE_CHAT_SESSION"; sessionId: string }
   | { type: "GET_REPORTS"; reportType?: ReportType }
   | { type: "GET_REPORT"; reportId: string }
-  | { type: "GENERATE_REPORT"; reportType: ReportType; date?: string }
+  | { type: "GENERATE_REPORT"; reportType: ReportType; date?: string; locale?: string }
   | { type: "GET_EMBEDDING_STATUS" }
   | { type: "TRIGGER_EMBEDDING_BACKFILL" }
   | { type: "GET_QUEUE_STATUS" };

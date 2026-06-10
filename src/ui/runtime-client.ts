@@ -33,7 +33,7 @@ export interface SidePanelClient {
   // Phase 2
   getReports(type?: ReportType): Promise<ReportRecord[]>;
   getReport(id: string): Promise<ReportRecord>;
-  generateReport(type: ReportType, date?: string): Promise<ReportRecord>;
+  generateReport(type: ReportType, date?: string, locale?: string): Promise<ReportRecord>;
   getEmbeddingStatus(): Promise<{ enabled: boolean; indexedCount: number; totalCount: number }>;
   getQueueStatus(): Promise<{ pending: number; processing: number; failed: number }>;
   triggerEmbeddingBackfill(): Promise<void>;
@@ -142,8 +142,8 @@ export const runtimeClient: SidePanelClient = {
     }
     throw new Error("无法读取报告详情。");
   },
-  async generateReport(type, date) {
-    const response = await send({ type: "GENERATE_REPORT", reportType: type, date });
+  async generateReport(type, date, locale) {
+    const response = await send({ type: "GENERATE_REPORT", reportType: type, date, locale });
     if ("report" in response) {
       return response.report;
     }

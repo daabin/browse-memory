@@ -123,6 +123,7 @@ export function App({
             result = await client.generateReport(
               data.args[0] as import("../../src/shared/types").ReportType,
               data.args[1] as string | undefined,
+              data.args[2] as string | undefined,
             );
             break;
           default:

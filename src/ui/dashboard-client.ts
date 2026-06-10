@@ -86,7 +86,7 @@ function hasChromeRuntime(): boolean {
 export interface DashboardClient {
   getReports(type?: ReportType): Promise<ReportRecord[]>;
   getReport(id: string): Promise<ReportRecord>;
-  generateReport(type: ReportType, date?: string): Promise<ReportRecord>;
+  generateReport(type: ReportType, date?: string, locale?: string): Promise<ReportRecord>;
   openUrl(url: string): void;
 }
 
@@ -111,13 +111,13 @@ export const dashboardClient: DashboardClient = {
     return report;
   },
 
-  async generateReport(type, date) {
+  async generateReport(type, date, locale) {
     if (hasChromeRuntime()) {
-      const response = await sendDirect({ type: "GENERATE_REPORT", reportType: type, date });
+      const response = await sendDirect({ type: "GENERATE_REPORT", reportType: type, date, locale });
       if ("report" in response) return response.report as ReportRecord;
       throw new Error("无法生成报告。");
     }
-    const report = (await bridgeCall("generateReport", [type, date])) as ReportRecord;
+    const report = (await bridgeCall("generateReport", [type, date, locale])) as ReportRecord;
     return report;
   },
 

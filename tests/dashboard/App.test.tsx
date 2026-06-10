@@ -90,7 +90,7 @@ describe("dashboard App", () => {
     await screen.findAllByText("2026-06-09 日报");
     fireEvent.click(screen.getByRole("button", { name: "立即生成" }));
 
-    await waitFor(() => expect(client.generateReport).toHaveBeenCalledWith("daily"));
+    await waitFor(() => expect(client.generateReport).toHaveBeenCalledWith("daily", undefined, "zh_CN"));
   });
 
   it("displays error message on load failure", async () => {

@@ -1,7 +1,7 @@
 import { BarChart3, Calendar, LoaderCircle, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { useT } from "../../src/i18n";
+import { useT, useLocale } from "../../src/i18n";
 import type { ReportRecord, ReportType } from "../../src/shared/types";
 import { MarkdownContent } from "../../src/ui/MarkdownContent";
 import { dashboardClient, type DashboardClient } from "../../src/ui/dashboard-client";
@@ -20,6 +20,7 @@ export function App({
   client?: DashboardClient;
 }) {
   const t = useT();
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<ReportType>("daily");
   const [reports, setReports] = useState<ReportRecord[]>([]);
   const [selected, setSelected] = useState<ReportRecord | null>(null);
@@ -58,7 +59,7 @@ export function App({
     setGenerating(true);
     setError("");
     try {
-      const report = await client.generateReport(activeTab);
+      const report = await client.generateReport(activeTab, undefined, locale);
       await loadReports(activeTab);
       setSelected(report);
     } catch (e) {
