@@ -77,6 +77,7 @@ export interface ChatMessageRecord {
   content: string;
   sources?: RagSource[];
   offline?: boolean;
+  missingApiKey?: boolean;
   createdAt: number;
 }
 
@@ -90,6 +91,7 @@ export interface RagAnswer {
   text: string;
   sources: RagSource[];
   offline: boolean;
+  missingApiKey?: boolean;
 }
 
 // Phase 2: Embedding

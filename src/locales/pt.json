@@ -6,7 +6,8 @@
     "close": "Fechar",
     "delete": "Excluir",
     "loading": "Carregando…",
-    "retry": "Tentar novamente"
+    "retry": "Tentar novamente",
+    "goToSettings": "Ir para Configurações"
   },
   "header": {
     "settingsAndPrivacy": "Configurações e privacidade",
@@ -108,6 +109,7 @@
     "loadFailed": "Falha ao carregar dados.",
     "searchFailed": "Falha na pesquisa.",
     "askFailed": "Falha na pergunta.",
+    "apiKeyMissingHint": "Chave API não configurada, respostas de IA indisponíveis.",
     "sessionLoadFailed": "Falha ao carregar sessão.",
     "deleteChat": "Excluir conversa",
     "deleteFailed": "Falha ao excluir conversa.",
@@ -124,6 +126,7 @@
     "generating": "Gerando…",
     "loadFailed": "Falha ao carregar relatórios.",
     "generateFailed": "Falha ao gerar relatório.",
+    "apiKeyMissing": "Configure primeiro o serviço de IA para gerar relatórios.",
     "topics": "Tópicos",
     "sources": "Páginas fonte",
     "pageCount": "{n} páginas",

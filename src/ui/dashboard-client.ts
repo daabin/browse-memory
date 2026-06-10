@@ -1,4 +1,5 @@
 import type { ReportRecord, ReportType } from "../shared/types";
+import { BrowseMemoryError } from "./runtime-client";
 
 const DASHBOARD_MSG_PREFIX = "bm-dashboard-";
 
@@ -19,6 +20,7 @@ interface BridgeResponse {
   ok: boolean;
   data?: unknown;
   error?: string;
+  errorCode?: string;
 }
 
 let bridgeId = 0;
@@ -34,7 +36,7 @@ function setupBridge() {
     if (data.ok) {
       entry.resolve(data.data);
     } else {
-      entry.reject(new Error(data.error ?? "Unknown error"));
+      entry.reject(new BrowseMemoryError(data.errorCode ?? "unknown", data.error ?? "Unknown error"));
     }
   });
 }
@@ -62,7 +64,10 @@ function bridgeCall(method: string, args: unknown[] = []): Promise<unknown> {
 async function sendDirect(message: unknown): Promise<Record<string, unknown>> {
   const response = (await chrome.runtime.sendMessage(message)) as Record<string, unknown>;
   if (!(response as { ok: boolean }).ok) {
-    throw new Error(((response as { message?: string }).message) ?? "Unknown error");
+    throw new BrowseMemoryError(
+      ((response as { code?: string }).code) ?? "unknown",
+      ((response as { message?: string }).message) ?? "Unknown error",
+    );
   }
   return response;
 }

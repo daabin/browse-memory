@@ -332,6 +332,31 @@ body {
 .citation-link { display: inline; padding: 0 3px; border: 0; border-radius: 4px; color: var(--blue); background: rgba(18,104,243,.09); font-size: inherit; font-weight: 600; cursor: pointer; vertical-align: baseline; }
 .citation-link:hover { background: rgba(18,104,243,.16); }
 .offline-label { display: inline-block; margin-bottom: 7px; padding: 3px 7px; border-radius: 999px; color: #765c17; background: #fff4c9; font-size: 10px; }
+.api-key-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  font-size: 11px;
+  color: #7a4c00;
+}
+.api-key-warning span { flex: 1; }
+.go-settings-btn {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.go-settings-btn:hover { opacity: .85; }
 .sources { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .sources button { max-width: 100%; padding: 5px 7px; border: 0; border-radius: 7px; color: var(--blue); background: rgba(18,104,243,.07); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .composer { margin-top: 12px; padding: 10px; border-radius: 15px; }

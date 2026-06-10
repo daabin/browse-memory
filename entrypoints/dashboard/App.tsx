@@ -1,8 +1,9 @@
-import { BarChart3, Calendar, LoaderCircle, RefreshCw } from "lucide-react";
+import { BarChart3, Calendar, LoaderCircle, RefreshCw, Settings } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { useT, useLocale } from "../../src/i18n";
 import type { ReportRecord, ReportType } from "../../src/shared/types";
+import { BrowseMemoryError } from "../../src/ui/runtime-client";
 import { MarkdownContent } from "../../src/ui/MarkdownContent";
 import { dashboardClient, type DashboardClient } from "../../src/ui/dashboard-client";
 
@@ -27,6 +28,7 @@ export function App({
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
+  const [missingApiKey, setMissingApiKey] = useState(false);
 
   const loadReports = useCallback(
     async (type: ReportType) => {
@@ -58,14 +60,30 @@ export function App({
   const generate = async () => {
     setGenerating(true);
     setError("");
+    setMissingApiKey(false);
     try {
       const report = await client.generateReport(activeTab, undefined, locale);
       await loadReports(activeTab);
       setSelected(report);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("dashboard.generateFailed"));
+      if (e instanceof BrowseMemoryError && e.code === "missing_api_key") {
+        setMissingApiKey(true);
+        setError(t("dashboard.apiKeyMissing"));
+      } else {
+        setError(e instanceof Error ? e.message : t("dashboard.generateFailed"));
+      }
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const openSettings = () => {
+    try {
+      if (typeof chrome !== "undefined" && chrome.runtime?.openOptionsPage) {
+        void chrome.runtime.openOptionsPage();
+      }
+    } catch {
+      // ignore
     }
   };
 
@@ -141,7 +159,17 @@ export function App({
         </main>
       </div>
 
-      {error ? <div className="dashboard-error">{error}</div> : null}
+      {error ? (
+        <div className="dashboard-error">
+          <span>{error}</span>
+          {missingApiKey ? (
+            <button className="error-action-btn" type="button" onClick={openSettings}>
+              <Settings size={14} />
+              {t("common.goToSettings")}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

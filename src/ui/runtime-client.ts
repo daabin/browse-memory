@@ -9,10 +9,16 @@ import type {
   TodaySnapshot,
 } from "../shared/types";
 
+export class BrowseMemoryError extends Error {
+  constructor(readonly code: string, message: string) {
+    super(message);
+  }
+}
+
 async function send(message: unknown): Promise<RuntimeResponse> {
   const response = (await chrome.runtime.sendMessage(message)) as RuntimeResponse;
   if (!response.ok) {
-    throw new Error(response.message);
+    throw new BrowseMemoryError(response.code, response.message);
   }
   return response;
 }

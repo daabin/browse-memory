@@ -6,7 +6,8 @@
     "close": "Schließen",
     "delete": "Löschen",
     "loading": "Laden…",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "goToSettings": "Zu den Einstellungen"
   },
   "header": {
     "settingsAndPrivacy": "Einstellungen & Datenschutz",
@@ -108,6 +109,7 @@
     "loadFailed": "Daten konnten nicht geladen werden.",
     "searchFailed": "Suche fehlgeschlagen.",
     "askFailed": "Q&A fehlgeschlagen.",
+    "apiKeyMissingHint": "API-Key nicht konfiguriert, KI-Antworten nicht verfügbar.",
     "sessionLoadFailed": "Sitzung konnte nicht geladen werden.",
     "deleteChat": "Unterhaltung löschen",
     "deleteFailed": "Unterhaltung konnte nicht gelöscht werden.",
@@ -124,6 +126,7 @@
     "generating": "Generierung…",
     "loadFailed": "Berichte konnten nicht geladen werden.",
     "generateFailed": "Bericht konnte nicht generiert werden.",
+    "apiKeyMissing": "Bitte konfigurieren Sie zuerst den KI-Dienst, um Berichte zu generieren.",
     "topics": "Themen",
     "sources": "Quellseiten",
     "pageCount": "{n} Seiten",

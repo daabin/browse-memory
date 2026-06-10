@@ -6,7 +6,8 @@
     "close": "Fermer",
     "delete": "Supprimer",
     "loading": "Chargement…",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "goToSettings": "Aller aux paramètres"
   },
   "header": {
     "settingsAndPrivacy": "Paramètres et confidentialité",
@@ -108,6 +109,7 @@
     "loadFailed": "Échec du chargement des données.",
     "searchFailed": "Échec de la recherche.",
     "askFailed": "Échec de la question.",
+    "apiKeyMissingHint": "Clé API non configurée, réponses IA indisponibles.",
     "sessionLoadFailed": "Échec du chargement de la session.",
     "deleteChat": "Supprimer la conversation",
     "deleteFailed": "Échec de la suppression de la conversation.",
@@ -124,6 +126,7 @@
     "generating": "Génération…",
     "loadFailed": "Échec du chargement des rapports.",
     "generateFailed": "Échec de la génération du rapport.",
+    "apiKeyMissing": "Veuillez d'abord configurer le service IA pour générer des rapports.",
     "topics": "Sujets",
     "sources": "Pages sources",
     "pageCount": "{n} pages",

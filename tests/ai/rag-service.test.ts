@@ -79,6 +79,7 @@ describe("RagService", () => {
     const answer = await service.answer("Question", [result(0)], undefined, true);
 
     expect(answer.offline).toBe(true);
+    expect(answer.missingApiKey).toBe(true);
     expect(client.chat).not.toHaveBeenCalled();
   });
 

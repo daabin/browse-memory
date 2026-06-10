@@ -6,7 +6,8 @@
     "close": "关闭",
     "delete": "删除",
     "loading": "加载中…",
-    "retry": "重试"
+    "retry": "重试",
+    "goToSettings": "前往设置"
   },
   "header": {
     "settingsAndPrivacy": "设置与隐私",
@@ -108,6 +109,7 @@
     "loadFailed": "加载数据失败。",
     "searchFailed": "搜索失败。",
     "askFailed": "问答失败。",
+    "apiKeyMissingHint": "未配置 API Key，AI 回答不可用。",
     "sessionLoadFailed": "无法加载会话详情。",
     "deleteChat": "删除对话",
     "deleteFailed": "删除对话失败。",
@@ -124,6 +126,7 @@
     "generating": "生成中…",
     "loadFailed": "加载报告失败。",
     "generateFailed": "生成报告失败。",
+    "apiKeyMissing": "请先配置 AI 服务，才能生成报告。",
     "topics": "主题",
     "sources": "来源页面",
     "pageCount": "{n} 页",

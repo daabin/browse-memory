@@ -23,18 +23,21 @@ export class RagService {
     configuration: RagConfiguration | undefined,
     online: boolean,
     history: ChatMessage[] = [],
+    offlineText?: string,
   ): Promise<RagAnswer> {
     const context = buildRagContext(results);
     if (!online || !configuration) {
+      const prefix = offlineText ?? "当前为离线模式。以下是本地检索到的相关记录：";
       return {
         text:
-          "当前为离线模式。以下是本地检索到的相关记录：\n\n" +
+          prefix + "\n\n" +
           results
             .slice(0, 5)
             .map((result, index) => `[${index + 1}] ${result.snippet}`)
             .join("\n\n"),
         sources: context.sources,
         offline: true,
+        missingApiKey: !configuration,
       };
     }
 

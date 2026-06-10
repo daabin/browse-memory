@@ -135,7 +135,13 @@ export function App({
         );
       } catch (err) {
         frame.contentWindow.postMessage(
-          { __bm: "dashboard-response", id: data.id, ok: false, error: err instanceof Error ? err.message : String(err) },
+          {
+            __bm: "dashboard-response",
+            id: data.id,
+            ok: false,
+            error: err instanceof Error ? err.message : String(err),
+            errorCode: (err as { code?: string }).code,
+          },
           "*",
         );
       }
@@ -297,6 +303,7 @@ export function App({
         content: ragAnswer.text,
         sources: ragAnswer.sources,
         offline: ragAnswer.offline,
+        missingApiKey: ragAnswer.missingApiKey,
       });
 
       // Replace optimistic user msg + append real assistant msg
@@ -746,13 +753,27 @@ function PageRow({ result, onOpen, t }: { result: SearchResult; onOpen(url: stri
 }
 
 function ChatBubble({ message, client }: { message: ChatMessageRecord; client: SidePanelClient }) {
+  const t = useT();
   const isUser = message.role === "user";
+  const openSettings = () => {
+    try { client.openOptions(); } catch { /* ignore */ }
+  };
   return (
     <div className={`chat-bubble ${isUser ? "user" : "assistant"}`}>
       {isUser ? (
         <p className="chat-text">{message.content}</p>
       ) : (
-        <AnswerInline text={message.content} sources={message.sources ?? []} offline={message.offline ?? false} client={client} />
+        <>
+          {message.missingApiKey ? (
+            <div className="api-key-warning">
+              <span>{t("sidepanel.apiKeyMissingHint")}</span>
+              <button className="go-settings-btn" type="button" onClick={openSettings}>
+                {t("common.goToSettings")}
+              </button>
+            </div>
+          ) : null}
+          <AnswerInline text={message.content} sources={message.sources ?? []} offline={message.offline ?? false} client={client} />
+        </>
       )}
     </div>
   );

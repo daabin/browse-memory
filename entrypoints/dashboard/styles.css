@@ -325,12 +325,30 @@ body {
   transform: translateX(-50%);
   background: #e74c3c;
   color: white;
-  padding: 8px 20px;
+  padding: 10px 20px;
   border-radius: 8px;
   font-size: 13px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+.error-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.4);
+  background: rgba(255,255,255,.15);
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.error-action-btn:hover { background: rgba(255,255,255,.28); }
 
 /* Spinner */
 .spin {
