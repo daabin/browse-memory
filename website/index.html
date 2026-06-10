@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f8fb" />
+    <meta
+      name="description"
+      content="BrowseMemory is a local-first Chrome extension that captures what you read, searches it offline, answers questions with sources, and creates AI reading reports."
+    />
+    <meta
+      name="keywords"
+      content="BrowseMemory, Chrome extension, browsing memory, local-first, offline search, RAG, semantic search, reading reports"
+    />
+    <meta name="author" content="BrowseMemory" />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://browsememory.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://browsememory.app/" />
+    <meta property="og:title" content="BrowseMemory — Give your browser a memory" />
+    <meta
+      property="og:description"
+      content="Capture what you read, find it again, and turn your browsing history into useful answers and reports."
+    />
+    <meta property="og:image" content="https://browsememory.app/assets/home-1.png" />
+    <meta
+      property="og:image:alt"
+      content="BrowseMemory side panel with reading statistics, AI answers, and saved pages"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BrowseMemory — Give your browser a memory" />
+    <meta
+      name="twitter:description"
+      content="A local-first Chrome extension for searchable browsing memory."
+    />
+    <link rel="icon" href="./assets/logo.png" />
+    <link rel="apple-touch-icon" href="./assets/logo.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>BrowseMemory — Give your browser a memory</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "BrowseMemory",
+        "applicationCategory": "BrowserApplication",
+        "operatingSystem": "Chrome",
+        "softwareVersion": "2.0.0",
+        "description": "A local-first Chrome extension for capturing, searching, and asking questions about what you read online.",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="BrowseMemory home">
+        <img src="./assets/logo.png" alt="" width="38" height="38" />
+        <span>BrowseMemory</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="#features" data-copy="navFeatures">Features</a>
+        <a href="#privacy" data-copy="navPrivacy">Privacy</a>
+        <a href="#how" data-copy="navHow">How it works</a>
+      </nav>
+      <div class="header-actions">
+        <button class="language-button" type="button" data-language-button>中文</button>
+        <button class="button button-small" type="button" data-open-install data-copy="install">
+          Install
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-glow hero-glow-one" aria-hidden="true"></div>
+        <div class="hero-glow hero-glow-two" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <div class="eyebrow reveal" data-copy="eyebrow">Local-first browsing memory</div>
+          <h1 class="reveal">
+            <span data-copy="heroLead">Your browser,</span>
+            <span class="changing-line">
+              <span class="changing-word" data-changing-word>finally remembers.</span>
+            </span>
+          </h1>
+          <p class="hero-description reveal" data-copy="heroDescription">
+            BrowseMemory quietly captures what you read, helps you find it again, and turns
+            your browsing history into sourced answers and useful reports.
+          </p>
+          <div class="hero-actions reveal">
+            <button class="button button-primary" type="button" data-open-install data-copy="heroCta">
+              Install for Chrome
+            </button>
+            <a class="button button-secondary" href="#product" data-copy="seeProduct">
+              See it in action
+            </a>
+          </div>
+          <p class="hero-note reveal" data-copy="heroNote">
+            Free and open source. Search and capture work without an AI key.
+          </p>
+        </div>
+
+        <div class="product-stage reveal" id="product">
+          <div class="stage-orbit stage-orbit-one" aria-hidden="true"></div>
+          <div class="stage-orbit stage-orbit-two" aria-hidden="true"></div>
+          <div class="product-window">
+            <div class="product-window-bar" aria-hidden="true">
+              <span></span><span></span><span></span>
+              <div class="address-bar">BrowseMemory</div>
+            </div>
+            <div class="product-window-body">
+              <div class="product-context">
+                <div class="context-kicker" data-copy="contextKicker">Quietly working as you browse</div>
+                <h2 data-copy="contextTitle">Your reading becomes useful memory.</h2>
+                <p data-copy="contextDescription">
+                  No folders to maintain. No manual bookmarking habit to build. Open the side
+                  panel whenever you need to search, ask, or reflect.
+                </p>
+                <div class="context-pills" aria-label="Core capabilities">
+                  <span data-copy="pillOne">Automatic capture</span>
+                  <span data-copy="pillTwo">Offline search</span>
+                  <span data-copy="pillThree">Source citations</span>
+                </div>
+              </div>
+              <div class="product-shot-wrap">
+                <img
+                  class="product-shot"
+                  src="./assets/home-1.png"
+                  alt="BrowseMemory side panel showing reading statistics, AI answers, and saved pages"
+                  width="1410"
+                  height="1644"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section screenshot-section" id="screenshots">
+        <div class="section-heading reveal">
+          <p class="section-kicker" data-copy="screensKicker">The real product</p>
+          <h2 data-copy="screensTitle">One place to search, ask, and reflect.</h2>
+          <p class="section-description" data-copy="screensDescription">
+            Every image below is captured from the working BrowseMemory extension.
+          </p>
+        </div>
+
+        <div class="screenshot-grid">
+          <figure class="screenshot-card screenshot-card-tall reveal">
+            <div class="screenshot-frame">
+              <img
+                src="./assets/chat-2.png"
+                alt="BrowseMemory conversation with detailed sourced answers"
+                width="1398"
+                height="1574"
+                loading="lazy"
+              />
+            </div>
+            <figcaption>
+              <strong data-copy="screenChatTitle">Follow-up conversations</strong>
+              <span data-copy="screenChatBody">Ask across your history and keep the context.</span>
+            </figcaption>
+          </figure>
+
+          <figure class="screenshot-card reveal">
+            <div class="screenshot-frame">
+              <img
+                src="./assets/setting-1.png"
+                alt="BrowseMemory settings for languages and AI service"
+                width="1410"
+                height="1614"
+                loading="lazy"
+              />
+            </div>
+            <figcaption>
+              <strong data-copy="screenSettingsTitle">Bring your own AI service</strong>
+              <span data-copy="screenSettingsBody">Choose the provider, model, and display language.</span>
+            </figcaption>
+          </figure>
+
+          <figure class="screenshot-card reveal">
+            <div class="screenshot-frame">
+              <img
+                src="./assets/setting-2.png"
+                alt="BrowseMemory semantic search and report settings"
+                width="1414"
+                height="1610"
+                loading="lazy"
+              />
+            </div>
+            <figcaption>
+              <strong data-copy="screenControlTitle">Fine-grained control</strong>
+              <span data-copy="screenControlBody">Configure semantic search, reports, and capture rules.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section section-soft" id="features">
+        <div class="section-heading reveal">
+          <p class="section-kicker" data-copy="featuresKicker">Remember more. Search less.</p>
+          <h2 data-copy="featuresTitle">Everything you read, ready when you need it.</h2>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card feature-card-wide reveal">
+            <div class="feature-number">01</div>
+            <div>
+              <h3 data-copy="featureCaptureTitle">Capture without the ceremony</h3>
+              <p data-copy="featureCaptureBody">
+                Meaningful reading sessions are saved automatically with page content,
+                duration, date, and domain. Incognito pages stay out by default.
+              </p>
+            </div>
+            <div class="feature-screenshot feature-screenshot-wide">
+              <img
+                src="./assets/home-2.png"
+                alt="BrowseMemory recent records grouped by domain"
+                width="1404"
+                height="1626"
+                loading="lazy"
+              />
+            </div>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-number">02</div>
+            <h3 data-copy="featureSearchTitle">Find it offline</h3>
+            <p data-copy="featureSearchBody">
+              Built-in BM25 search stays fast and useful without a network connection. Optional
+              semantic search adds meaning-aware retrieval.
+            </p>
+            <div class="feature-screenshot">
+              <img
+                src="./assets/search.png"
+                alt="BrowseMemory offline search results"
+                width="1402"
+                height="1550"
+                loading="lazy"
+              />
+            </div>
+          </article>
+
+          <article class="feature-card feature-card-blue reveal">
+            <div class="feature-number">03</div>
+            <h3 data-copy="featureAskTitle">Ask with evidence</h3>
+            <p data-copy="featureAskBody">
+              Chat across your saved pages and follow citations back to the original sources.
+              Multi-turn rewriting keeps follow-up questions grounded.
+            </p>
+            <div class="feature-screenshot">
+              <img
+                src="./assets/chat-1.png"
+                alt="BrowseMemory AI chat answer with source citations"
+                width="1400"
+                height="1626"
+                loading="lazy"
+              />
+            </div>
+          </article>
+
+          <article class="feature-card feature-card-wide reveal">
+            <div class="feature-number">04</div>
+            <div>
+              <h3 data-copy="featureReportsTitle">See the shape of your attention</h3>
+              <p data-copy="featureReportsBody">
+                Generate daily, weekly, and monthly reports with topic clusters, reading totals,
+                and highlights from your own browsing.
+              </p>
+            </div>
+            <div class="feature-screenshot feature-screenshot-wide">
+              <img
+                src="./assets/report.png"
+                alt="BrowseMemory monthly report dashboard"
+                width="1420"
+                height="1612"
+                loading="lazy"
+              />
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section privacy-section" id="privacy">
+        <div class="privacy-copy reveal">
+          <p class="section-kicker" data-copy="privacyKicker">Local by default</p>
+          <h2 data-copy="privacyTitle">Your browsing memory belongs to you.</h2>
+          <p data-copy="privacyBody">
+            Pages, indexes, reports, and settings live in the extension's IndexedDB. BrowseMemory
+            does not request access to browser history, cookies, or network traffic.
+          </p>
+          <a href="https://github.com/daabin/browse-memory#%E9%9A%90%E7%A7%81" data-copy="privacyLink">
+            Read the privacy details
+          </a>
+        </div>
+        <div class="privacy-panel reveal">
+          <div class="privacy-row">
+            <strong data-copy="privacyLocalTitle">Local storage</strong>
+            <span data-copy="privacyLocalBody">Your browsing records remain in the browser.</span>
+          </div>
+          <div class="privacy-row">
+            <strong data-copy="privacyKeyTitle">Encrypted keys</strong>
+            <span data-copy="privacyKeyBody">API keys use a non-exportable AES-GCM key.</span>
+          </div>
+          <div class="privacy-row">
+            <strong data-copy="privacyControlTitle">You stay in control</strong>
+            <span data-copy="privacyControlBody">Block domains, disable features, or clear all data.</span>
+          </div>
+          <div class="privacy-row">
+            <strong data-copy="privacyAiTitle">Explicit AI setup</strong>
+            <span data-copy="privacyAiBody">AI and embedding providers are configured by you.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-soft" id="how">
+        <div class="section-heading reveal">
+          <p class="section-kicker" data-copy="howKicker">From browsing to insight</p>
+          <h2 data-copy="howTitle">Three quiet steps. One useful memory.</h2>
+        </div>
+        <ol class="steps">
+          <li class="reveal">
+            <span>1</span>
+            <div>
+              <h3 data-copy="stepOneTitle">Browse normally</h3>
+              <p data-copy="stepOneBody">
+                Read the web as usual. Eligible pages are captured after a meaningful visit.
+              </p>
+            </div>
+          </li>
+          <li class="reveal">
+            <span>2</span>
+            <div>
+              <h3 data-copy="stepTwoTitle">Open the side panel</h3>
+              <p data-copy="stepTwoBody">
+                Search by keyword, browse by domain, or ask a question in natural language.
+              </p>
+            </div>
+          </li>
+          <li class="reveal">
+            <span>3</span>
+            <div>
+              <h3 data-copy="stepThreeTitle">Return to the source</h3>
+              <p data-copy="stepThreeBody">
+                Use citations and reports to recover context, revisit ideas, and spot patterns.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="cta-section">
+        <img src="./assets/logo.png" alt="" width="78" height="78" class="cta-logo reveal" />
+        <h2 class="reveal" data-copy="ctaTitle">Give your browser a memory.</h2>
+        <p class="reveal" data-copy="ctaBody">
+          Install the open-source extension and start building a private, searchable record of
+          what you read.
+        </p>
+        <div class="hero-actions reveal">
+          <button class="button button-primary" type="button" data-open-install data-copy="heroCta">
+            Install for Chrome
+          </button>
+          <a
+            class="button button-secondary"
+            href="https://github.com/daabin/browse-memory"
+            target="_blank"
+            rel="noreferrer"
+            data-copy="sourceCta"
+          >
+            View source
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand footer-brand" href="#top">
+        <img src="./assets/logo.png" alt="" width="30" height="30" />
+        <span>BrowseMemory</span>
+      </a>
+      <p>© 2026 BrowseMemory</p>
+      <div>
+        <a href="https://github.com/daabin/browse-memory" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://github.com/daabin/browse-memory/releases" target="_blank" rel="noreferrer" data-copy="releases">
+          Releases
+        </a>
+      </div>
+    </footer>
+
+    <dialog class="install-dialog" data-install-dialog>
+      <div class="dialog-heading">
+        <div class="brand">
+          <img src="./assets/logo.png" alt="" width="38" height="38" />
+          <span data-copy="dialogTitle">Install BrowseMemory</span>
+        </div>
+        <button class="dialog-close" type="button" data-close-install aria-label="Close">×</button>
+      </div>
+      <p data-copy="dialogIntro">
+        BrowseMemory is currently installed as an unpacked Chrome extension.
+      </p>
+      <ol class="install-steps">
+        <li>
+          <span>1</span>
+          <div>
+            <strong data-copy="installOneTitle">Download the latest release</strong>
+            <p data-copy="installOneBody">Get the ZIP file from the GitHub Releases page.</p>
+          </div>
+        </li>
+        <li>
+          <span>2</span>
+          <div>
+            <strong data-copy="installTwoTitle">Unzip it</strong>
+            <p data-copy="installTwoBody">Keep the extracted folder somewhere permanent.</p>
+          </div>
+        </li>
+        <li>
+          <span>3</span>
+          <div>
+            <strong data-copy="installThreeTitle">Open Chrome extensions</strong>
+            <p data-copy="installThreeBody">Visit chrome://extensions and enable Developer mode.</p>
+          </div>
+        </li>
+        <li>
+          <span>4</span>
+          <div>
+            <strong data-copy="installFourTitle">Load the extension</strong>
+            <p data-copy="installFourBody">Choose “Load unpacked” and select the extracted folder.</p>
+          </div>
+        </li>
+      </ol>
+      <a
+        class="button button-primary dialog-action"
+        href="https://github.com/daabin/browse-memory/releases"
+        target="_blank"
+        rel="noreferrer"
+        data-copy="openReleases"
+      >
+        Open Releases
+      </a>
+    </dialog>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
