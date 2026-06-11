@@ -47,6 +47,7 @@ export const optionsClient: OptionsClient = {
         embeddingModel: response.settings.embeddingModel,
         embeddingReuseChatKey: response.settings.embeddingReuseChatKey,
         reportDailyHour: response.settings.reportDailyHour,
+        locale: response.settings.locale ?? "en",
       };
       return { settings, hasApiKey: response.hasApiKey, hasEmbeddingApiKey: response.hasEmbeddingApiKey };
     }

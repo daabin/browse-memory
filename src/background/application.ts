@@ -207,6 +207,7 @@ export class BrowseMemoryApplication {
               request.question,
               history,
               ragConfig,
+              settings.locale,
             );
           } catch {
             // rewriting failure is non-fatal, use original question
@@ -243,6 +244,8 @@ export class BrowseMemoryApplication {
             ragConfig,
             request.online,
             history,
+            undefined,
+            settings.locale,
           ),
         };
       }
@@ -293,7 +296,7 @@ export class BrowseMemoryApplication {
           model: settings.chatModel,
         };
         const date = request.date;
-        const locale = request.locale ?? "zh_CN";
+        const locale = request.locale ?? settings.locale ?? "en";
         // User-triggered: always force regenerate to overwrite stale reports
         const force = true;
         let report;

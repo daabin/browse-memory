@@ -34,6 +34,7 @@ const EMPTY_SETTINGS: PublicSettings = {
   embeddingModel: "BAAI/bge-m3",
   embeddingReuseChatKey: true,
   reportDailyHour: 3,
+  locale: "en",
 };
 
 export function App({
@@ -242,7 +243,7 @@ export function App({
             <span><Globe2 size={18} /></span>
             <div><h2>{t("settings.language")}</h2><p>{t("settings.languageDesc")}</p></div>
           </div>
-          <LanguageSelector />
+          <LanguageSelector client={client} settings={settings} />
         </section>
 
         <section className="settings-card ai-card">
@@ -496,7 +497,13 @@ function formatBytes(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function LanguageSelector() {
+function LanguageSelector({
+  client,
+  settings,
+}: {
+  client: OptionsClient;
+  settings: PublicSettings;
+}) {
   const locale = useLocale();
   const setLocale = useSetLocale();
   return (
@@ -506,7 +513,11 @@ function LanguageSelector() {
           key={loc}
           type="button"
           className={`language-option${loc === locale ? " active" : ""}`}
-          onClick={() => setLocale(loc)}
+          onClick={() => {
+            setLocale(loc);
+            // Persist locale to IndexedDB so the background worker can read it.
+            void client.saveSettings({ ...settings, locale: loc }).catch(() => {});
+          }}
         >
           {LOCALE_NAMES[loc]}
           {loc === locale ? <CheckCircle2 size={14} /> : null}

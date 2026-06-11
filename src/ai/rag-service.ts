@@ -3,10 +3,8 @@ import type { RagAnswer, SearchResult } from "../shared/types";
 
 import { resolveCitations } from "./citations";
 import { buildRagContext } from "./context";
+import { getPrompts } from "./ai-prompts";
 import type { OpenAICompatibleClient } from "./openai-client";
-
-const SYSTEM_PROMPT =
-  "你是 BrowseMemory 助手。只能根据提供的浏览记录回答。使用 [1]、[2] 格式标注来源；没有依据时明确说明。";
 
 export interface RagConfiguration {
   baseUrl: string;
@@ -24,10 +22,12 @@ export class RagService {
     online: boolean,
     history: ChatMessage[] = [],
     offlineText?: string,
+    locale?: string,
   ): Promise<RagAnswer> {
+    const prompts = getPrompts(locale);
     const context = buildRagContext(results);
     if (!online || !configuration) {
-      const prefix = offlineText ?? "当前为离线模式。以下是本地检索到的相关记录：";
+      const prefix = offlineText ?? prompts.offlinePrefix;
       return {
         text:
           prefix + "\n\n" +
@@ -41,9 +41,11 @@ export class RagService {
       };
     }
 
-    const userContent = `浏览记录：\n${context.text}\n\n问题：${question}`;
+    const userContent = prompts.ragUser
+      .replace("{context}", context.text)
+      .replace("{question}", question);
     const messages: ChatMessage[] = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: prompts.ragSystem },
       ...history,
       { role: "user", content: userContent },
     ];

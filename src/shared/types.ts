@@ -17,6 +17,8 @@ export interface AppSettings {
   embeddingModel: string;
   embeddingReuseChatKey: boolean;
   reportDailyHour: number;
+  /** UI / AI prompt locale – persisted so the background worker can read it. */
+  locale: string;
 }
 
 export interface PageCapture {

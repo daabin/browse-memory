@@ -112,7 +112,7 @@ export default defineBackground(() => {
       baseUrl: s.chatBaseUrl,
       apiKey,
       model: s.chatModel,
-    });
+    }, s.locale);
     await database.pages.update(pageId, { summary });
   });
   handlers.set("report_daily", async (payload) => {
@@ -124,7 +124,7 @@ export default defineBackground(() => {
       baseUrl: s.chatBaseUrl,
       apiKey,
       model: s.chatModel,
-    });
+    }, s.locale);
   });
   handlers.set("report_weekly", async (payload) => {
     const { weekId } = payload as { weekId: string };
@@ -135,7 +135,7 @@ export default defineBackground(() => {
       baseUrl: s.chatBaseUrl,
       apiKey,
       model: s.chatModel,
-    });
+    }, s.locale);
   });
   handlers.set("report_monthly", async (payload) => {
     const { monthId } = payload as { monthId: string };
@@ -146,7 +146,7 @@ export default defineBackground(() => {
       baseUrl: s.chatBaseUrl,
       apiKey,
       model: s.chatModel,
-    });
+    }, s.locale);
   });
 
   const taskRunner = new TaskRunner(taskQueue, handlers);

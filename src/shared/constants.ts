@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   embeddingModel: "BAAI/bge-m3",
   embeddingReuseChatKey: true,
   reportDailyHour: 3,
+  locale: "en",
 };
 
 export const SESSION_STORAGE_KEY = "browseMemory.activeSession";
