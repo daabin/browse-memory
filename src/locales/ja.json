@@ -61,6 +61,7 @@
     "embeddingModel": "Embeddingモデル",
     "embeddingIndexed": "{n} / {total} ページをインデックス済み",
     "embeddingBackfill": "インデックス構築",
+        "embeddingEnqueued": "{n} ページをインデックス待ち行列に追加しました。バックグラウンドで処理中…",
     "testEmbedding": "Embeddingテスト",
     "embeddingConnected": "Embedding接続に成功しました。",
     "report": "レポート設定",

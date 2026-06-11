@@ -65,5 +65,6 @@ export type RuntimeResponse =
       ok: true;
       queueStatus: { pending: number; processing: number; failed: number };
     }
+  | { ok: true; enqueued: number }
   | { ok: true }
   | { ok: false; code: string; message: string };

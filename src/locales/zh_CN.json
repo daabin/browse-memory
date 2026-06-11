@@ -61,6 +61,7 @@
     "embeddingModel": "Embedding 模型",
     "embeddingIndexed": "已索引 {n} / {total} 页",
     "embeddingBackfill": "补建索引",
+        "embeddingEnqueued": "已将 {n} 个页面加入索引队列，正在后台处理中…",
     "testEmbedding": "测试 Embedding",
     "embeddingConnected": "Embedding 连接成功。",
     "report": "报告设置",

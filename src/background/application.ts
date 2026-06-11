@@ -335,7 +335,7 @@ export class BrowseMemoryApplication {
         for (const pageId of unembeddedIds) {
           await this.taskQueue.enqueue("embed", { pageId });
         }
-        return { ok: true };
+        return { ok: true, enqueued: unembeddedIds.length };
       }
       case "GET_QUEUE_STATUS": {
         const [pending, processing, failed] = await Promise.all([

@@ -61,6 +61,7 @@
     "embeddingModel": "Embedding-Modell",
     "embeddingIndexed": "{n} / {total} Seiten indiziert",
     "embeddingBackfill": "Index erstellen",
+        "embeddingEnqueued": "{n} Seiten zur Index-Warteschlange hinzugefügt, wird im Hintergrund verarbeitet…",
     "testEmbedding": "Embedding testen",
     "embeddingConnected": "Embedding-Verbindung erfolgreich.",
     "report": "Berichte",

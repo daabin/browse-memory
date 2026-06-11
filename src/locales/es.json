@@ -61,6 +61,7 @@
     "embeddingModel": "Modelo de Embedding",
     "embeddingIndexed": "{n} / {total} páginas indexadas",
     "embeddingBackfill": "Construir índice",
+        "embeddingEnqueued": "{n} páginas añadidas a la cola de indexación, procesando en segundo plano…",
     "testEmbedding": "Probar Embedding",
     "embeddingConnected": "Conexión de Embedding exitosa.",
     "report": "Informes",

@@ -61,6 +61,7 @@
     "embeddingModel": "نموذج Embedding",
     "embeddingIndexed": "{n} / {total} صفحة مفهرسة",
     "embeddingBackfill": "بناء الفهرس",
+        "embeddingEnqueued": "تمت إضافة {n} صفحة إلى قائمة انتظار الفهرسة، تتم المعالجة في الخلفية…",
     "testEmbedding": "اختبار Embedding",
     "embeddingConnected": ".نجح اتصال Embedding",
     "report": "التقارير",

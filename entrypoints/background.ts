@@ -229,7 +229,12 @@ export default defineBackground(() => {
         await coordinator.updatePage(sender.tab.id, request.page);
         return { ok: true };
       }
-      return handleMessage(request);
+      const response = await handleMessage(request);
+      // After backfill enqueue, immediately process the task queue
+      if (request.type === "TRIGGER_EMBEDDING_BACKFILL" && response.ok) {
+        try { await taskRunner.runBatch(20); } catch { /* silent */ }
+      }
+      return response;
     },
   );
 });

@@ -158,15 +158,29 @@ export function App({
   };
 
   const backfill = () => {
-    void run(async () => {
-      // Save current embedding settings before triggering backfill
-      await client.saveSettings(settings, undefined, embeddingApiKey || undefined);
-      if (embeddingApiKey) {
-        setHasEmbeddingApiKey(true);
-        setEmbeddingApiKey("");
+    void (async () => {
+      setBusy(true);
+      setError("");
+      setMessage("");
+      try {
+        // Save current embedding settings before triggering backfill
+        await client.saveSettings(settings, undefined, embeddingApiKey || undefined);
+        if (embeddingApiKey) {
+          setHasEmbeddingApiKey(true);
+          setEmbeddingApiKey("");
+        }
+        const result = await client.triggerEmbeddingBackfill();
+        setMessage(t("settings.embeddingEnqueued", { n: result.enqueued }));
+      } catch (operationError) {
+        setError(
+          operationError instanceof Error
+            ? operationError.message
+            : String(operationError),
+        );
+      } finally {
+        setBusy(false);
       }
-      await client.triggerEmbeddingBackfill();
-    }, t("settings.saved"));
+    })();
   };
 
   // Auto-save embedding toggle and related fields immediately on change

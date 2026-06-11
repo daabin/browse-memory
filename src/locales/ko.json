@@ -61,6 +61,7 @@
     "embeddingModel": "Embedding 모델",
     "embeddingIndexed": "{n} / {total} 페이지 색인됨",
     "embeddingBackfill": "색인 구축",
+        "embeddingEnqueued": "{n}개 페이지가 색인 대기열에 추가되었습니다. 백그라운드에서 처리 중…",
     "testEmbedding": "Embedding 테스트",
     "embeddingConnected": "Embedding 연결 성공.",
     "report": "보고서 설정",

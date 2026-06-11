@@ -27,7 +27,7 @@ export interface OptionsClient {
     embeddingApiKey?: string,
   ): Promise<void>;
   getEmbeddingStatus(): Promise<{ enabled: boolean; indexedCount: number; totalCount: number }>;
-  triggerEmbeddingBackfill(): Promise<void>;
+  triggerEmbeddingBackfill(): Promise<{ enqueued: number }>;
   getStorageUsage(): Promise<number>;
   clearAllData(): Promise<void>;
 }
@@ -69,7 +69,8 @@ export const optionsClient: OptionsClient = {
     return { enabled: false, indexedCount: 0, totalCount: 0 };
   },
   async triggerEmbeddingBackfill() {
-    await send({ type: "TRIGGER_EMBEDDING_BACKFILL" });
+    const response = await send({ type: "TRIGGER_EMBEDDING_BACKFILL" });
+    return { enqueued: ("enqueued" in response ? response.enqueued : 0) as number };
   },
   async getStorageUsage() {
     const response = await send({ type: "GET_STORAGE_USAGE" });

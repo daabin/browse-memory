@@ -61,6 +61,7 @@
     "embeddingModel": "Embedding Model",
     "embeddingIndexed": "{n} / {total} pages indexed",
     "embeddingBackfill": "Build Index",
+        "embeddingEnqueued": "{n} pages enqueued for indexing, processing in background…",
     "testEmbedding": "Test Embedding",
     "embeddingConnected": "Embedding connection successful.",
     "report": "Reports",

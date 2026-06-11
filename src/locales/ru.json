@@ -61,6 +61,7 @@
     "embeddingModel": "Модель Embedding",
     "embeddingIndexed": "{n} / {total} страниц проиндексировано",
     "embeddingBackfill": "Построить индекс",
+        "embeddingEnqueued": "{n} страниц добавлено в очередь индексации, обработка в фоне…",
     "testEmbedding": "Тестировать Embedding",
     "embeddingConnected": "Подключение Embedding успешно.",
     "report": "Отчёты",
