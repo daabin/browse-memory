@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: extension/ai_rag
+title: AI RAG 与智能摘要服务
+scope:
+    - src/ai/
+source_files: []
+depends_on: []
+related_to:
+    - path: extension/search_engine
+    - path: extension/background_orchestration

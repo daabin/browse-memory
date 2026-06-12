@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: extension
+title: 浏览器记忆扩展核心编排
+scope:
+    - src/
+    - entrypoints/
+    - tests/
+source_files: []
+depends_on: []
+related_to: []

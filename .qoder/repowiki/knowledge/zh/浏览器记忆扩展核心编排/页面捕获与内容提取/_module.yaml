@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: extension/capture_extraction
+title: 页面捕获与内容提取
+scope:
+    - src/capture/
+    - src/extraction/
+source_files: []
+depends_on: []
+related_to:
+    - path: extension/search_engine

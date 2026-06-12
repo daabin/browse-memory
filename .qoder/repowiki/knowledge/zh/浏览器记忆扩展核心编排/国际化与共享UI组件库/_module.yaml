@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: extension/shared_i18n_ui
+title: 国际化与共享UI组件库
+scope:
+    - src/shared/
+    - src/i18n/
+    - src/locales/
+    - src/ui/
+source_files: []
+depends_on: []
+related_to:
+    - path: extension/entrypoints

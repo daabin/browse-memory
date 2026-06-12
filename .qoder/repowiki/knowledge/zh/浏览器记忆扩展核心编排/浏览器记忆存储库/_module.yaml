@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: extension/storage_repositories
+title: 浏览器记忆存储库
+scope:
+    - src/storage/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,18 @@
+schema_version: 1
+module_path: ""
+title: BrowseMemory 全栈研发与交付编排
+scope:
+    - .gitignore
+    - README.md
+    - package.json
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - tsconfig.json
+    - vitest.config.ts
+    - wxt.config.ts
+    - eslint.config.js
+    - .github/workflows/
+    - docs/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,130 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+branch: main
+exported_at: "2026-06-12T06:47:54Z"
+modules:
+    "":
+        dir_name: BrowseMemory 全栈研发与交付编排
+        title: BrowseMemory 全栈研发与交付编排
+        scope:
+            - .gitignore
+            - README.md
+            - package.json
+            - pnpm-lock.yaml
+            - pnpm-workspace.yaml
+            - tsconfig.json
+            - vitest.config.ts
+            - wxt.config.ts
+            - eslint.config.js
+            - .github/workflows/
+            - docs/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    extension:
+        dir_name: 浏览器记忆扩展核心编排
+        title: 浏览器记忆扩展核心编排
+        scope:
+            - src/
+            - entrypoints/
+            - tests/
+        source_files: []
+        children:
+            - extension/entrypoints
+            - extension/background_orchestration
+            - extension/search_engine
+            - extension/ai_rag
+            - extension/shared_i18n_ui
+            - extension/storage_repositories
+            - extension/capture_extraction
+        depends_on: []
+        related_to: []
+    extension/ai_rag:
+        dir_name: AI RAG 与智能摘要服务
+        title: AI RAG 与智能摘要服务
+        scope:
+            - src/ai/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: extension/search_engine
+            - path: extension/background_orchestration
+    extension/background_orchestration:
+        dir_name: 后台任务编排与消息处理
+        title: 后台任务编排与消息处理
+        scope:
+            - src/background/
+            - src/queue/
+            - src/reports/
+            - src/security/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: extension/ai_rag
+    extension/capture_extraction:
+        dir_name: 页面捕获与内容提取
+        title: 页面捕获与内容提取
+        scope:
+            - src/capture/
+            - src/extraction/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: extension/search_engine
+    extension/entrypoints:
+        dir_name: 浏览器扩展入口点管理
+        title: 浏览器扩展入口点管理
+        scope:
+            - entrypoints/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: extension/shared_i18n_ui
+    extension/search_engine:
+        dir_name: 混合检索与文本处理引擎
+        title: 混合检索与文本处理引擎
+        scope:
+            - src/search/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: extension/capture_extraction
+            - path: extension/ai_rag
+    extension/shared_i18n_ui:
+        dir_name: 国际化与共享UI组件库
+        title: 国际化与共享UI组件库
+        scope:
+            - src/shared/
+            - src/i18n/
+            - src/locales/
+            - src/ui/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: extension/entrypoints
+    extension/storage_repositories:
+        dir_name: 浏览器记忆存储库
+        title: 浏览器记忆存储库
+        scope:
+            - src/storage/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    website:
+        dir_name: BrowseMemory 产品营销官网
+        title: BrowseMemory 产品营销官网
+        scope:
+            - website/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

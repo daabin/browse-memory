@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: extension/background_orchestration
+title: 后台任务编排与消息处理
+scope:
+    - src/background/
+    - src/queue/
+    - src/reports/
+    - src/security/
+source_files: []
+depends_on: []
+related_to:
+    - path: extension/ai_rag

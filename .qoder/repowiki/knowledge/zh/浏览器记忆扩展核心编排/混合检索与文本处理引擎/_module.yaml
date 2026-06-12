@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: extension/search_engine
+title: 混合检索与文本处理引擎
+scope:
+    - src/search/
+source_files: []
+depends_on: []
+related_to:
+    - path: extension/capture_extraction
+    - path: extension/ai_rag

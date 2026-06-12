@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: extension/entrypoints
+title: 浏览器扩展入口点管理
+scope:
+    - entrypoints/
+source_files: []
+depends_on: []
+related_to:
+    - path: extension/shared_i18n_ui
